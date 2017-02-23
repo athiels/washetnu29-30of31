@@ -14,6 +14,8 @@ app.controller("songListController", function ($scope, $http, $location) {
     $scope.trustSrc = function (src) {
         return $sce.trustAsResourceUrl(src);
     }
+    $scope.admin = false;
+    
     $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@top-printing.eu', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
 
     function getUserInfo() {
@@ -26,6 +28,12 @@ app.controller("songListController", function ($scope, $http, $location) {
                 var userInfo = JSON.parse(xhr.responseText);
                 $scope.userFname = userInfo.userInfo[0][0].fname;
                 $scope.userLname = userInfo.userInfo[0][0].lname;
+                
+                if (jq.inArray($scope.userMail, $scope.admins)) {
+                    console.log("ADMIN");
+                    $scope.admin = true;
+                }
+                
                 $scope.$apply();
             }
         }
