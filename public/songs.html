@@ -1,10 +1,11 @@
 <div ng-controller="songListController">
     <div class="navigation">
-        <div style="width:550px; margin: 0 auto;">
-            <div class="navigationButton pointer" ng-click="showWebsiteInfo()"><span class="glyphicon glyphicon-question-sign"></span> Wat is
+        <div class="float-right">
+            <div class="navigationButton pointer float-left" ng-click="goToWatIsDezeWebsite()"><span class="glyphicon glyphicon-question-sign"></span> Wat is
                 <br> deze website </div>
-            <div class="navigationButton pointer" ng-click="addSong()"><span class="glyphicon glyphicon-music"></span> Liedje
+            <div class="navigationButton pointer hidden-xs" ng-click="addSong()"><span class="glyphicon glyphicon-music"></span> Liedje
                 <br> toevoegen </div>
+             <div class="navigationButton pointer hidden-xs"  ng-click="goToAllUsers()"><span class="glyphicon glyphicon-user"></span> Bekijk alle<br>gebruikers</div>
             <div ng-show="userMail" class="navigationButton"> {{userFname}} {{userLname}}
                 <a ng-click="logOut()">
                     <hr> <span class="glyphicon glyphicon-log-out"></span> Afmelden </a>
@@ -15,9 +16,9 @@
     <div id="main">
         <div>
             <div id="layout" class="container-fluid list">
-                <div id="search" ng-show="admin"><h3><a ng-click="goToAllUsers()">Bekijk alle e-mail adressen </a></h3></div>
                 
                 <input type="text" ng-model="search" class="form-control has-feedback" placeholder="Zoek een titel of een artiest" id="search">
+                <div class="pointer" ng-click="addSong()"  id="addSongLink"><span class="glyphicon glyphicon-music"></span> Liedje toevoegen </div>
                 
                 <div ng-repeat="song in songList | filter:search:strict | orderBy:'-upvotes'" class="song">
                     <h3>{{$index+1}}. <span class="hidden-xs"><strong>{{song.artist}}</strong> - </span>{{song.title}}

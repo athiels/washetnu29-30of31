@@ -5,7 +5,9 @@ app.config(function ($routeProvider) {
         templateUrl: "songs.html"
     }).when("/allUsers/", {
         templateUrl: "allUsers.html"
-    });
+    }).when("/watIsDezeWebsite/", {
+        templateUrl: "watIsDezeWebsite.html"
+    });    
 });
 app.controller("songListController", function ($scope, $http, $location) {
     $scope.userMail = localStorage.getItem('songs-user');
@@ -45,6 +47,9 @@ app.controller("songListController", function ($scope, $http, $location) {
     }
     $scope.goToSongList = function () {
         $location.path("/");
+    }
+    $scope.goToWatIsDezeWebsite = function() {
+        $location.path("/watIsDezeWebsite/");
     }
     $scope.getAllUsers = function () {
         $scope.allUsers = [];
