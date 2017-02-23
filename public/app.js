@@ -14,6 +14,7 @@ app.controller("songListController", function ($scope, $http, $location) {
     $scope.trustSrc = function (src) {
         return $sce.trustAsResourceUrl(src);
     }
+    $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@top-printing.eu', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
 
     function getUserInfo() {
         $scope.userMail = localStorage.getItem('songs-user');
@@ -31,16 +32,13 @@ app.controller("songListController", function ($scope, $http, $location) {
         xhr.send();
     }
     getUserInfo();
-    
-    $scope.goToAllUsers = function() {
+    $scope.goToAllUsers = function () {
         $location.path("/allUsers/");
     }
-    
-    $scope.goToSongList = function() {
+    $scope.goToSongList = function () {
         $location.path("/");
     }
-    
-    $scope.getAllUsers = function() {
+    $scope.getAllUsers = function () {
         $scope.allUsers = [];
         var xhr = new XMLHttpRequest()
         xhr.open("GET", "/getallusers");

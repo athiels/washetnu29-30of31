@@ -15,7 +15,7 @@
     <div id="main">
         <div>
             <div id="layout" class="container-fluid list">
-                <div id="search" ng-show="userMail==='tom.vielfont@top-printing.eu'"><h3><a ng-click="goToAllUsers()">Bekijk alle e-mail adressen </a></h3></div>
+                <div id="search" ng-show="userMail in admins"><h3><a ng-click="goToAllUsers()">Bekijk alle e-mail adressen </a></h3></div>
                 
                 <input type="text" ng-model="search" class="form-control has-feedback" placeholder="Zoek een titel of een artiest" id="search">
                 
@@ -34,7 +34,7 @@
                     <div class="likeSection" style="margin-top:-7px; margin-left:30px">
                         <h4>                         
                             <span style="margin-right:5px;" class="glyphicon glyphicon-thumbs-up upvoteButton"></span>{{song.upvotes}}
-                            <a ng-click="upvoteSong(song)" ng-hide="song.upvotedBy.indexOf(userMail)!=-1" > Like dit nummer</a> 
+                            <a ng-click="upvoteSong(song)" ng-hide="song.upvotedBy.indexOf(userMail)!=-1" > Like dit liedje</a> 
                         </h4> </div>
                     <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
                         <h6 class="hidden-xs" ng-if="song.userMail===userMail">Toegevoegd door jou</h6> </div>
@@ -84,7 +84,7 @@
     <h4><strong>Liedjes toevoegen</strong></h4>
     <p>Jullie kunnen zelf liedjes toevoegen door bovenaan in het menu op "LIEDJE TOEVOEGEN" te klikken. Geef dan de titel, de artiest en eventueel een YouTube link in. Het liedje zal dan mee in de lijst komen te staan. </p>
     <h4><strong>Liedjes liken</strong></h4>
-    <p> Jullie kunnen ook bepaalde nummers 'liken' zodat deze hoger op de lijst komen te staan. Dit doen jullie door naast het <span class="glyphicon glyphicon-thumbs-up"></span> icoontje op <strong>'dit nummer liken'</strong> te klikken (elk liedje kan per persoon maar éénmaal geliket worden).
+    <p> Jullie kunnen ook bepaalde nummers 'liken' zodat deze hoger op de lijst komen te staan. Dit doen jullie door naast het <span class="glyphicon glyphicon-thumbs-up"></span> icoontje op <strong>'like dit liedje'</strong> te klikken (elk liedje kan per persoon maar éénmaal geliket worden).
         <br> Op deze manier krijgen we een mooie hitlijst met allemaal toppers die op onze fuif gedraaid zullen worden. </p>
     <p>Hopelijk hebben we binnen de kortste keren een <strong>TOP LIJST</strong>!</p>
 </div>
