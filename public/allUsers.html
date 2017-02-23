@@ -1,8 +1,10 @@
 <div ng-controller="songListController">
     <div class="navigation">
         <div class="float-right">
-            <div class="navigationButton pointer" ng-click="goToSongList()"><span class="glyphicon glyphicon-music"></span> Terug naar
-                <br> Muzieklijst </div>
+             <div class="navigationButton pointer float-left" ng-click="goToWatIsDezeWebsite()"><span class="glyphicon glyphicon-question-sign"></span> Wat is
+                <br> deze website </div>
+            <div class="navigationButton pointer" ng-click="goToSongList()"><span class="glyphicon glyphicon-music"></span> Was het nu
+                <br>hitlijst </div>
             <div ng-show="userMail" class="navigationButton"> {{userFname}} {{userLname}}
                 <a ng-click="logOut()">
                     <hr> <span class="glyphicon glyphicon-log-out"></span> Afmelden </a>
@@ -19,8 +21,7 @@
                     <h4>{{$index+1}}. {{user.fname}} {{user.lname}} 
                         <br>
                         {{user.mail}} 
-                    </h4>
-                </div>
+                    </h4> </div>
             </div>
         </div>
     </div>
