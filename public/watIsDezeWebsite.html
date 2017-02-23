@@ -3,7 +3,7 @@
         <div class="float-right">
             <div class="navigationButton pointer" ng-click="goToSongList()"><span class="glyphicon glyphicon-music"></span> Terug naar
                 <br> Muzieklijst </div>            
-            <div class="navigationButton pointer hidden-xs" ng-click="goToAllUsers()"><span class="glyphicon glyphicon-user"></span> Bekijk alle
+            <div class="navigationButton pointer hidden-xs" ng-if="admin" ng-click="goToAllUsers()"><span class="glyphicon glyphicon-user"></span> Bekijk alle
                 <br>gebruikers</div>
             <div ng-show="userMail" class="navigationButton"> {{userFname}} {{userLname}}
                 <a ng-click="logOut()">
@@ -27,5 +27,6 @@
                 <p>Hopelijk hebben we binnen de kortste keren een <strong>TOP LIJST</strong>!</p>
             </div>
         </div>
+        <img src="uitnodiging.jpg" width="100%">
     </div>
 </div>

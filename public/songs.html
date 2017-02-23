@@ -5,7 +5,7 @@
                 <br> deze website </div>
             <div class="navigationButton pointer hidden-xs" ng-click="addSong()"><span class="glyphicon glyphicon-music"></span> Liedje
                 <br> toevoegen </div>
-             <div class="navigationButton pointer hidden-xs"  ng-click="goToAllUsers()"><span class="glyphicon glyphicon-user"></span> Bekijk alle<br>gebruikers</div>
+             <div class="navigationButton pointer hidden-xs" ng-if="admin"  ng-click="goToAllUsers()"><span class="glyphicon glyphicon-user"></span> Bekijk alle<br>gebruikers</div>
             <div ng-show="userMail" class="navigationButton"> {{userFname}} {{userLname}}
                 <a ng-click="logOut()">
                     <hr> <span class="glyphicon glyphicon-log-out"></span> Afmelden </a>

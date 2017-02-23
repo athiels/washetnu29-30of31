@@ -31,7 +31,7 @@ app.controller("songListController", function ($scope, $http, $location) {
                 $scope.userFname = userInfo.userInfo[0][0].fname;
                 $scope.userLname = userInfo.userInfo[0][0].lname;
                 
-                if (jq.inArray($scope.userMail, $scope.admins)) {
+                if($scope.admins.indexOf($scope.userMail) >= 0 ) {
                     console.log("ADMIN");
                     $scope.admin = true;
                 }
