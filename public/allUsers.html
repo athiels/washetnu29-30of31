@@ -1,0 +1,27 @@
+<div ng-controller="songListController">
+    <div class="navigation">
+        <div style="width:550px; margin: 0 auto;">
+            <div class="navigationButton pointer" ng-click="goToSongList()"><span class="glyphicon glyphicon-music"></span> Terug naar
+                <br> Muzieklijst </div>
+            <div ng-show="userMail" class="navigationButton"> {{userFname}} {{userLname}}
+                <a ng-click="logOut()">
+                    <hr> <span class="glyphicon glyphicon-log-out"></span> Afmelden </a>
+            </div>
+            <div ng-hide="userMail" class="navigationButton pointer" ng-click="logIn()"> Aanmelden </div>
+        </div>
+    </div>
+    <div id="main">
+        <div>
+            <div id="layout" class="container-fluid list">
+                <h1>Een lijst van alle gebruikers</h1>
+                <hr>
+                <div ng-repeat="user in allUsers">
+                    <h4>{{$index+1}}. {{user.fname}} {{user.lname}} 
+                        <br>
+                        {{user.mail}} 
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

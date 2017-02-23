@@ -113,6 +113,18 @@ app.get('/getuserinfo', function (req, res, next) {
         })
     });
 });
+app.get('/getallusers', function (req, res, next) {
+    var users = [];
+    mongoose.connection.db.collection("users", function (err, collection) {
+        collection.find({
+        }).toArray(function (err, data) {
+            users.push(data);
+            return res.status(200).send({
+                users: users
+            });
+        })
+    });
+});
 app.post('/addsong', function (req, res) {
     var userMail = req.headers['usermail'];
     var userFname = req.headers['userfname'];
@@ -156,6 +168,28 @@ app.post('/upvotesong', function (req, res) {
         }
     });
 });
+app.post('/addyturl', function (req, res) {
+    var user = req.headers['user'];
+    var title = req.headers['title'];
+    var artist = req.headers['artist'];
+    var yturl = req.headers['yturl'];
+    Song.findOne({
+        title: title
+        , artist: artist
+    }, function (err, doc) {
+        if (err) {
+            console.log(err);
+            res.status(409).end();
+        }
+        else if (doc) {
+            doc.yturl = yturl;            
+            doc.save();
+            res.status(200).end();
+        }
+    });
+});
+
+
 // =================================================================
 // start the server ================================================
 // =================================================================

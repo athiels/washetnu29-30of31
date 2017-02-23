@@ -3,12 +3,12 @@ var app = angular.module('Songs-app', ["ngAnimate", "ngRoute"]);
 app.config(function ($routeProvider) {
     $routeProvider.when("/", {
         templateUrl: "songs.html"
-    }).when("/home/", {
-        templateUrl: "home.html"
+    }).when("/allUsers/", {
+        templateUrl: "allUsers.html"
     });
 });
 app.controller("songListController", function ($scope, $http, $location) {
-    $scope.userMail = sessionStorage.getItem('songs-user');
+    $scope.userMail = localStorage.getItem('songs-user');
     $scope.userFname;
     $scope.userLname;
     $scope.trustSrc = function (src) {
@@ -16,6 +16,7 @@ app.controller("songListController", function ($scope, $http, $location) {
     }
 
     function getUserInfo() {
+        $scope.userMail = localStorage.getItem('songs-user');
         var xhr = new XMLHttpRequest()
         xhr.open("GET", "/getuserinfo");
         xhr.setRequestHeader("mail", $scope.userMail);
@@ -30,6 +31,29 @@ app.controller("songListController", function ($scope, $http, $location) {
         xhr.send();
     }
     getUserInfo();
+    
+    $scope.goToAllUsers = function() {
+        $location.path("/allUsers/");
+    }
+    
+    $scope.goToSongList = function() {
+        $location.path("/");
+    }
+    
+    $scope.getAllUsers = function() {
+        $scope.allUsers = [];
+        var xhr = new XMLHttpRequest()
+        xhr.open("GET", "/getallusers");
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                $scope.allUsers = data.users[0];
+                //console.log($scope.allUsers);                
+            }
+        }
+        xhr.send();
+    }
+    $scope.getAllUsers();
 
     function getSongs() {
         var songList = [];
@@ -40,7 +64,7 @@ app.controller("songListController", function ($scope, $http, $location) {
                 var songs = JSON.parse(xhr.responseText);
                 $scope.songList = songs.songs[0];
                 $scope.$apply();
-                console.log($scope.songList);
+                //console.log($scope.songList);
             }
         }
         xhr.send();
@@ -74,8 +98,29 @@ app.controller("songListController", function ($scope, $http, $location) {
             showLogInModal();
         }
     }
+    $scope.addYturl = function (song) {
+        if ($scope.userMail) {
+            bootbox.prompt("Vul hieronder de link (url) naar de YouTube video van <strong>'" + song.artist + "' - '" + song.title + "'</strong> in:", function (result) {
+                var xhr = new XMLHttpRequest()
+                xhr.open("POST", "/addyturl");
+                xhr.setRequestHeader("user", $scope.userMail);
+                xhr.setRequestHeader("title", song.title);
+                xhr.setRequestHeader("artist", song.artist);
+                xhr.setRequestHeader("yturl", result);
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        location.reload()
+                    }
+                }
+                xhr.send();
+            });
+        }
+        else {
+            showLogInModal();
+        }
+    }
     $scope.logOut = function () {
-        sessionStorage.setItem('songs-user', "");
+        localStorage.setItem('songs-user', "");
         location.reload();
     }
     $scope.logIn = function () {
@@ -164,7 +209,7 @@ app.controller("songListController", function ($scope, $http, $location) {
                         xhr.setRequestHeader("mail", items.logInMail);
                         xhr.onload = function () {
                             if (xhr.status === 200) {
-                                sessionStorage.setItem('songs-user', items.logInMail);
+                                localStorage.setItem('songs-user', items.logInMail);
                                 location.reload();
                             }
                             else if (xhr.status === 422) {
@@ -210,7 +255,7 @@ app.controller("songListController", function ($scope, $http, $location) {
                         xhr.setRequestHeader("mail", createAccountMail);
                         xhr.onload = function () {
                             if (xhr.status === 200) {
-                                sessionStorage.setItem('songs-user', createAccountMail);
+                                localStorage.setItem('songs-user', createAccountMail);
                                 location.reload();
                             }
                             else if (xhr.status === 409) {
