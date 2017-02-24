@@ -55,7 +55,7 @@ app.controller("songListController", function ($scope, $http, $location) {
         xhr.onload = function () {
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
-                $scope.allUsers = data.users[0];                
+                $scope.allUsers = data.users[0];
             }
         }
         xhr.send();
@@ -152,6 +152,8 @@ app.controller("songListController", function ($scope, $http, $location) {
     }
 
     function showAddSongModal() {
+        jq('#songTitle').attr('value', "");
+        jq('#songArtist').attr('value', "");
         var title = "<h1>Zelf een liedje toevoegen</h1><h4>Titel en artiest zijn verplicht. <br>Je mag ook een link (URL) van een YouTube filmpje invullen!</h4>"
         var modal = bootbox.dialog({
             message: jq(".form-content").html()
@@ -323,6 +325,8 @@ app.controller("songListController", function ($scope, $http, $location) {
                                     bootbox.alert({
                                         message: "<h3>'" + items.songTitle + "' van '" + items.songArtist + "' is aangepast!</h3>"
                                         , callback: function () {
+                                            jq('#songTitle').attr('value', "");
+                                            jq('#songArtist').attr('value', "");
                                             location.reload();
                                         }
                                     })
@@ -340,14 +344,14 @@ app.controller("songListController", function ($scope, $http, $location) {
                         else {
                             if (!items.songTitle) {
                                 jq('#em_title').text("Vul alsjeblieft de titel van het lied in.");
-                                jq('#songTitle').attr('value', " ");
+                                jq('#songTitle').attr('value', "");
                             }
                             else {
                                 jq('#songTitle').attr('value', items.songTitle);
                             }
                             if (!items.songArtist) {
                                 jq('#em_artist').text("Vul alsjeblieft de artist van het lied in.");
-                                jq('#songArtist').attr('value', " ");
+                                jq('#songArtist').attr('value', "");
                                 console.log("aangepast");
                             }
                             else {
