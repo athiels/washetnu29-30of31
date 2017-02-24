@@ -7,7 +7,7 @@ app.config(function ($routeProvider) {
         templateUrl: "allUsers.html"
     }).when("/watIsDezeWebsite/", {
         templateUrl: "watIsDezeWebsite.html"
-    });    
+    });
 });
 app.controller("songListController", function ($scope, $http, $location) {
     $scope.userMail = localStorage.getItem('songs-user');
@@ -17,7 +17,6 @@ app.controller("songListController", function ($scope, $http, $location) {
         return $sce.trustAsResourceUrl(src);
     }
     $scope.admin = false;
-    
     $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@top-printing.eu', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
 
     function getUserInfo() {
@@ -30,12 +29,10 @@ app.controller("songListController", function ($scope, $http, $location) {
                 var userInfo = JSON.parse(xhr.responseText);
                 $scope.userFname = userInfo.userInfo[0][0].fname;
                 $scope.userLname = userInfo.userInfo[0][0].lname;
-                
-                if($scope.admins.indexOf($scope.userMail) >= 0 ) {
-                    console.log("ADMIN");
+                if ($scope.admins.indexOf($scope.userMail) >= 0) {
+                    //console.log("ADMIN");
                     $scope.admin = true;
                 }
-                
                 $scope.$apply();
             }
         }
@@ -48,7 +45,7 @@ app.controller("songListController", function ($scope, $http, $location) {
     $scope.goToSongList = function () {
         $location.path("/");
     }
-    $scope.goToWatIsDezeWebsite = function() {
+    $scope.goToWatIsDezeWebsite = function () {
         $location.path("/watIsDezeWebsite/");
     }
     $scope.getAllUsers = function () {
@@ -58,13 +55,18 @@ app.controller("songListController", function ($scope, $http, $location) {
         xhr.onload = function () {
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
-                $scope.allUsers = data.users[0];
-                //console.log($scope.allUsers);                
+                $scope.allUsers = data.users[0];                
             }
         }
         xhr.send();
     }
     $scope.getAllUsers();
+
+    function capitalizeFirstLetter(string) {
+        return string.replace(/\w\S*/g, function (txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+    }
 
     function getSongs() {
         var songList = [];
@@ -74,6 +76,12 @@ app.controller("songListController", function ($scope, $http, $location) {
             if (xhr.status === 200) {
                 var songs = JSON.parse(xhr.responseText);
                 $scope.songList = songs.songs[0];
+                for (i = 0; i < $scope.songList.length; i++) {
+                    $scope.songList[i].title = capitalizeFirstLetter($scope.songList[i].title);
+                    $scope.songList[i].artist = capitalizeFirstLetter($scope.songList[i].artist);
+                    $scope.songList[i].userFname = capitalizeFirstLetter($scope.songList[i].userFname);
+                    $scope.songList[i].userLname = capitalizeFirstLetter($scope.songList[i].userLname);
+                }
                 $scope.$apply();
                 //console.log($scope.songList);
             }
@@ -233,11 +241,6 @@ app.controller("songListController", function ($scope, $http, $location) {
                         return false;
                     }
           }
-                , {
-                    label: "Sluiten"
-                    , className: "btn btn-default pull-left"
-                    , callback: function () {}
-          }
         ]
             , show: false
             , onEscape: function () {
@@ -276,6 +279,82 @@ app.controller("songListController", function ($scope, $http, $location) {
                         xhr.send();
                         modal.modal("hide");
                         return false;
+                    }
+          }
+                , {
+                    label: "Sluiten"
+                    , className: "btn btn-default pull-left"
+                    , callback: function () {}
+          }
+        ]
+            , show: false
+            , onEscape: function () {
+                modal.modal("hide");
+            }
+        });
+        modal.modal("show");
+    }
+    $scope.editTitleAndArtist = function (song) {
+        jq('#songTitle').attr('value', song.title);
+        jq('#songArtist').attr('value', song.artist);
+        jq('#songYturl').attr('value', song.yturl);
+        var title = "<h1>Liedje aanpassen</h1>"
+        var modal = bootbox.dialog({
+            message: jq(".form-content").html()
+            , title: title
+            , buttons: [
+                {
+                    label: "Opslaan!"
+                    , className: "btn btn-success pull-right"
+                    , callback: function () {
+                        var form = modal.find(".form");
+                        var items = form.serializeJSON();
+                        if (items.songTitle && items.songArtist) {
+                            console.log("sending post to edit song");
+                            var xhr = new XMLHttpRequest()
+                            xhr.open("POST", "/editsong");
+                            xhr.setRequestHeader("title", song.title);
+                            xhr.setRequestHeader("artist", song.artist);
+                            xhr.setRequestHeader("edittitle", items.songTitle);
+                            xhr.setRequestHeader("editartist", items.songArtist);
+                            xhr.setRequestHeader("edityturl", items.songYturl);
+                            xhr.onload = function () {
+                                if (xhr.status === 200) {
+                                    bootbox.alert({
+                                        message: "<h3>'" + items.songTitle + "' van '" + items.songArtist + "' is aangepast!</h3>"
+                                        , callback: function () {
+                                            location.reload();
+                                        }
+                                    })
+                                }
+                                else {
+                                    bootbox.alert({
+                                        message: "<h3>Sorry, er is iets mis gegaan, probeer het nog eens :)</h3>"
+                                    })
+                                }
+                            }
+                            xhr.send();
+                            modal.modal("hide");
+                            return false;
+                        }
+                        else {
+                            if (!items.songTitle) {
+                                jq('#em_title').text("Vul alsjeblieft de titel van het lied in.");
+                                jq('#songTitle').attr('value', " ");
+                            }
+                            else {
+                                jq('#songTitle').attr('value', items.songTitle);
+                            }
+                            if (!items.songArtist) {
+                                jq('#em_artist').text("Vul alsjeblieft de artist van het lied in.");
+                                jq('#songArtist').attr('value', " ");
+                                console.log("aangepast");
+                            }
+                            else {
+                                jq('#em_artist').attr('value', items.songArtist);
+                            }
+                            showEditSongModal();
+                        }
                     }
           }
                 , {

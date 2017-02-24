@@ -5,7 +5,8 @@
                 <br> deze website </div>
             <div class="navigationButton pointer hidden-xs" ng-click="addSong()"><span class="glyphicon glyphicon-music"></span> Liedje
                 <br> toevoegen </div>
-             <div class="navigationButton pointer hidden-xs" ng-if="admin"  ng-click="goToAllUsers()"><span class="glyphicon glyphicon-user"></span> Bekijk alle<br>gebruikers</div>
+            <div class="navigationButton pointer hidden-xs" ng-if="admin" ng-click="goToAllUsers()"><span class="glyphicon glyphicon-user"></span> Bekijk alle
+                <br>gebruikers</div>
             <div ng-show="userMail" class="navigationButton"> {{userFname}} {{userLname}}
                 <a ng-click="logOut()">
                     <hr> <span class="glyphicon glyphicon-log-out"></span> Afmelden </a>
@@ -16,10 +17,8 @@
     <div id="main">
         <div>
             <div id="layout" class="container-fluid list">
-                
                 <input type="text" ng-model="search" class="form-control has-feedback" placeholder="Zoek een titel of een artiest" id="search">
-                <div class="pointer" ng-click="addSong()"  id="addSongLink"><span class="glyphicon glyphicon-music"></span> Liedje toevoegen </div>
-                
+                <div class="pointer" ng-click="addSong()" id="addSongLink"><span class="glyphicon glyphicon-music"></span> Liedje toevoegen </div>
                 <div ng-repeat="song in songList | filter:search:strict | orderBy:'-upvotes'" class="song">
                     <h3>{{$index+1}}. <span class="hidden-xs"><strong>{{song.artist}}</strong> - </span>{{song.title}}
                     <div style="float:right">                    
@@ -38,11 +37,27 @@
                             <a ng-click="upvoteSong(song)" ng-hide="song.upvotedBy.indexOf(userMail)!=-1" > Like dit liedje</a> 
                         </h4> </div>
                     <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
-                        <h6 class="hidden-xs" ng-if="song.userMail===userMail">Toegevoegd door jou</h6> </div>
-                    <h6 class="hidden-xs" ng-if="song.userMail!=userMail">Toegevoegd door {{song.userFname}} {{song.userLname}}</h6> </div>
+                        <h6 class="hidden-xs" ng-if="song.userMail===userMail">Toegevoegd door jou</h6>                        
+                        </div>
+                    <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
+                        <h6 class="hidden-xs" ng-if="song.userMail!=userMail">Toegevoegd door {{song.userFname}} {{song.userLname}}</h6> </div>
+                    <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
+                       <h6 ng-if="song.userMail===userMail" ng-click="editTitleAndArtist(song)"><a><span class="glyphicon glyphicon-pencil"></span> Liedje bewerken</a></h6></div>
+                    
+                </div>
                 <hr> </div>
         </div>
     </div>
+</div>
+
+<div class="edit-form" style="display:none;">
+    <form class="form-group">
+        <div class="form-group" id="editSongTitleDiv">
+             <label for="songTitle">TITEL</label>
+            <input class="form-control" id="editSongTitle" name="songTitle">
+        </div>
+    </form>
+    
 </div>
 
 <div class="form-content" style="display:none;">

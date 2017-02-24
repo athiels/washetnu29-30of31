@@ -39,7 +39,7 @@ var apiRoutes = express.Router();
 // ---------------------------------------------------------
 // http://localhost/api/authenticate
 app.post('/authenticate', function (req, res) {
-    var mail = req.headers['mail'];
+    var mail = req.headers['mail'].toLowerCase();
     // find the user
     User.findOne({
         mail: mail
@@ -59,9 +59,9 @@ app.post('/authenticate', function (req, res) {
 });
 app.post('/createuser', function (req, res) {
     // getting log in data
-    var fname = req.headers['fname'];
-    var lname = req.headers['lname'];
-    var mail = req.headers['mail'];
+    var fname = req.headers['fname'].toLowerCase();
+    var lname = req.headers['lname'].toLowerCase();
+    var mail = req.headers['mail'].toLowerCase();
     // create a new user if it doesn't exist yet
     User.findOne({
         mail: mail
@@ -101,7 +101,7 @@ app.get('/getsongs', function (req, res, next) {
 });
 app.get('/getuserinfo', function (req, res, next) {
     var userInfo = [];
-    var mail = req.headers['mail'];
+    var mail = req.headers['mail'].toLowerCase();
     mongoose.connection.db.collection("users", function (err, collection) {
         collection.find({
             mail: mail
@@ -126,12 +126,12 @@ app.get('/getallusers', function (req, res, next) {
     });
 });
 app.post('/addsong', function (req, res) {
-    var userMail = req.headers['usermail'];
-    var userFname = req.headers['userfname'];
-    var userLname = req.headers['userlname'];
-    var title = req.headers['title'];
-    var artist = req.headers['artist'];
-    var yturl = req.headers['yturl'];
+    var userMail = req.headers['usermail'].toLowerCase();
+    var userFname = req.headers['userfname'].toLowerCase();
+    var userLname = req.headers['userlname'].toLowerCase();
+    var title = req.headers['title'].toLowerCase();
+    var artist = req.headers['artist'].toLowerCase();
+    var yturl = req.headers['yturl'].toLowerCase();
     var newSong = new Song({
         userMail: userMail
         , userFname: userFname
@@ -146,10 +146,34 @@ app.post('/addsong', function (req, res) {
         res.status(200).end();
     });
 });
+app.post('/editsong', function (req, res) {
+    var title = req.headers['title'].toLowerCase();
+    var artist = req.headers['artist'].toLowerCase();
+    var editTitle = req.headers['edittitle'].toLowerCase();
+    var editArtist = req.headers['editartist'].toLowerCase();
+    var editYturl = req.headers['yturl'];
+    console.log("Searching for "+artist+" - "+title);
+    Song.findOne({
+        title: title
+        , artist: artist
+    }, function (err, doc) {
+        if (err) {
+            console.log(err);
+            res.status(409).end();
+        }
+        else if (doc) {
+            doc.title = editTitle;
+            doc.artis = editArtist;
+            doc.yturl = editYturl;
+            doc.save();
+            res.status(200).end();
+        }
+    });
+});
 app.post('/upvotesong', function (req, res) {
-    var user = req.headers['user'];
-    var title = req.headers['title'];
-    var artist = req.headers['artist'];
+    var user = req.headers['user'].toLowerCase();
+    var title = req.headers['title'].toLowerCase();
+    var artist = req.headers['artist'].toLowerCase();
     var upvotes = req.headers['upvotes'];
     Song.findOne({
         title: title
@@ -162,16 +186,15 @@ app.post('/upvotesong', function (req, res) {
         else if (doc) {
             doc.upvotes = upvotes;
             doc.upvotedBy.push(user);
-            console.log(doc.upvotedBy);
             doc.save();
             res.status(200).end();
         }
     });
 });
 app.post('/addyturl', function (req, res) {
-    var user = req.headers['user'];
-    var title = req.headers['title'];
-    var artist = req.headers['artist'];
+    var user = req.headers['user'].toLowerCase();
+    var title = req.headers['title'].toLowerCase();
+    var artist = req.headers['artist'].toLowerCase();
     var yturl = req.headers['yturl'];
     Song.findOne({
         title: title
