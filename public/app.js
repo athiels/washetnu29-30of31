@@ -58,6 +58,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
                 $scope.allUsers = data.users[0];
+                $scope.getSongs();
             }
         }
         xhr.send();
@@ -114,8 +115,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             }
         }
         xhr.send();
-    }
-    $scope.getSongs();
+    }    
     $scope.addSong = function () {
         if ($scope.userMail) {
             showAddSongModal();
