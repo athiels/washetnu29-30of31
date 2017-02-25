@@ -605,7 +605,7 @@ p {
     border-radius: 8px;
     padding: 6px;
     z-index: 1000;
-    margin-left: 25px;
+    margin-left: 75px;
 }
 
 .hoverOverLike:hover > div > .likeList {

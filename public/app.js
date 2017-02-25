@@ -189,6 +189,10 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             message: jq(".info").html()
         })
     }
+    jq(document).on("submit", ".bootbox form", function (e) {
+        e.preventDefault();
+        jq(".bootbox .btn-primary").click();
+    });
 
     function showAddSongModal() {
         jq('#songTitle').attr('value', "");
@@ -200,7 +204,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             , buttons: [
                 {
                     label: "Toevoegen!"
-                    , className: "btn btn-success pull-right"
+                    , className: "btn btn-success btn-primary pull-right"
                     , callback: function () {
                         var form = modal.find(".form");
                         var items = form.serializeJSON();
@@ -211,8 +215,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                                         if (comareNames(items.songArtist, $scope.songList[i].artist) * 100 > 80) {
                                             bootbox.alert({
                                                 message: "<h2>Dit nummer staat al in onze hitlijst!</h2><h4>Je kan altijd zoeken naar een bepaald nummer door de titel of de artiest in het zoekveld te typen.</h4>"
-                                                , callback: function () {
-                                                }
+                                                , callback: function () {}
                                             });
                                             return;
                                         }
@@ -263,6 +266,45 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             }
         });
         modal.modal("show");
+        modal.bind('shown.bs.modal', function () {
+            modal.find("#songTitle").focus();
+        });
+    }
+
+    function logInTypo(mail) {
+        var similarMail;
+        for (i = 0; i < $scope.allUsers.length; i++) {
+            if (comareNames($scope.allUsers[i].mail, mail) * 100 > 80) {
+                similarMail = $scope.allUsers[i].mail;
+            }
+        }
+        if (similarMail) {
+            bootbox.confirm({
+                message: "<h2>Typfoutje?</h2><h4>Bedoelde u misschien " + similarMail + " ? <br> Wil u hiermee aanmelden of een nieuwe account maken?</h4>"
+                , buttons: {
+                    confirm: {
+                        label: 'Aanmelden'
+                        , className: 'btn btn-primary btn-success'
+                    }
+                    , cancel: {
+                        label: 'Nieuw account maken'
+                        , className: 'btn btn-default'
+                    }
+                }
+                , callback: function (result) {
+                    if (result) {
+                        localStorage.setItem('songs-user', similarMail);
+                        location.reload();
+                    }
+                    else {
+                        showCreateAccountModal(mail);
+                    }
+                }
+            });
+        }
+        else {
+            showCreateAccountModal(mail);
+        }
     }
 
     function showLogInModal() {
@@ -287,7 +329,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                             }
                             else if (xhr.status === 422) {
                                 $scope.createAccountMail = items.logInMail;
-                                showCreateAccountModal(items.logInMail);
+                                logInTypo($scope.createAccountMail);
                             }
                         }
                         xhr.send();
@@ -302,6 +344,9 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             }
         });
         modal.modal("show");
+        modal.bind('shown.bs.modal', function () {
+            modal.find("#logInMail").focus();
+        });
     }
 
     function showCreateAccountModal(createAccountMail) {
@@ -312,7 +357,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             , buttons: [
                 {
                     label: "Account aanmaken!"
-                    , className: "btn btn-primary pull-right"
+                    , className: "btn btn-primary  pull-right"
                     , callback: function () {
                         var form = modal.find(".form");
                         var items = form.serializeJSON();
@@ -347,6 +392,9 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             }
         });
         modal.modal("show");
+        modal.bind('shown.bs.modal', function () {
+            modal.find("#createAccountFirstName").focus();
+        });
     }
     $scope.editTitleAndArtist = function (song) {
         jq('#songTitle').attr('value', song.title);
@@ -359,7 +407,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             , buttons: [
                 {
                     label: "Opslaan!"
-                    , className: "btn btn-success pull-right"
+                    , className: "btn btn-success btn-primary pull-right"
                     , callback: function () {
                         var form = modal.find(".form");
                         var items = form.serializeJSON();
@@ -423,6 +471,9 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             }
         });
         modal.modal("show");
+        modal.bind('shown.bs.modal', function () {
+            modal.find("#songTitle").focus();
+        });
     }
 
     function comareNames(s1, s2) {
