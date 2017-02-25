@@ -9,15 +9,16 @@ app.config(function ($routeProvider) {
         templateUrl: "watIsDezeWebsite.html"
     });
 });
-app.controller("songListController", function ($scope, $http, $location) {
+app.controller("songListController", function ($scope, $http, $location, $filter) {
     $scope.userMail = localStorage.getItem('songs-user');
     $scope.userFname;
     $scope.userLname;
     $scope.trustSrc = function (src) {
         return $sce.trustAsResourceUrl(src);
     }
+    $scope.showSongsOfUserMessage = "";
     $scope.admin = false;
-    $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@top-printing.eu', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
+    $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@skynet.be', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
 
     function getUserInfo() {
         $scope.userMail = localStorage.getItem('songs-user');
@@ -30,7 +31,6 @@ app.controller("songListController", function ($scope, $http, $location) {
                 $scope.userFname = userInfo.userInfo[0][0].fname;
                 $scope.userLname = userInfo.userInfo[0][0].lname;
                 if ($scope.admins.indexOf($scope.userMail) >= 0) {
-                    //console.log("ADMIN");
                     $scope.admin = true;
                 }
                 $scope.$apply();
@@ -68,7 +68,16 @@ app.controller("songListController", function ($scope, $http, $location) {
         });
     }
 
-    function getSongs() {
+    function getUserByMail(mail) {
+        for (a = 0; a < $scope.allUsers.length; a++) {
+            if ($scope.allUsers[a].mail === mail) {
+                return capitalizeFirstLetter($scope.allUsers[a].fname + " " + $scope.allUsers[a].lname)
+            }
+        }
+    }
+
+    $scope.getSongs = function() {
+        $scope.showSongsOfUserMessage = "";
         var songList = [];
         var xhr = new XMLHttpRequest()
         xhr.open("GET", "/getsongs");
@@ -76,19 +85,36 @@ app.controller("songListController", function ($scope, $http, $location) {
             if (xhr.status === 200) {
                 var songs = JSON.parse(xhr.responseText);
                 $scope.songList = songs.songs[0];
+                $scope.songList = $filter('orderBy')($scope.songList, '-upvotes');
                 for (i = 0; i < $scope.songList.length; i++) {
                     $scope.songList[i].title = capitalizeFirstLetter($scope.songList[i].title);
                     $scope.songList[i].artist = capitalizeFirstLetter($scope.songList[i].artist);
                     $scope.songList[i].userFname = capitalizeFirstLetter($scope.songList[i].userFname);
                     $scope.songList[i].userLname = capitalizeFirstLetter($scope.songList[i].userLname);
+                    $scope.songList[i].ranking = i + 1;
+                    $scope.songList[i].likeList = [];
+                    for (j = 0; j < $scope.songList[i].upvotedBy.length; j++) {
+                        if ($scope.songList[i].upvotedBy[j] === $scope.userMail) {
+                            var u = "Jij";
+                        }
+                        else {
+                            var u = getUserByMail($scope.songList[i].upvotedBy[j]);
+                        }
+                        $scope.songList[i].likeList.push(u);
+                    }
+                    for (j = 0; j < $scope.songList[i].likeList.length; j++) {
+                        if ($scope.songList[i].likeList[j] === "Jij") {
+                            $scope.songList[i].likeList[j] = $scope.songList[i].likeList[0];
+                            $scope.songList[i].likeList[0] = "Jij"; 
+                        }
+                    }
                 }
                 $scope.$apply();
-                //console.log($scope.songList);
             }
         }
         xhr.send();
     }
-    getSongs();
+    $scope.getSongs();
     $scope.addSong = function () {
         if ($scope.userMail) {
             showAddSongModal();
@@ -99,7 +125,6 @@ app.controller("songListController", function ($scope, $http, $location) {
     }
     $scope.upvoteSong = function (song) {
         if ($scope.userMail) {
-            console.log("Upvoting " + song.title);
             var xhr = new XMLHttpRequest()
             xhr.open("POST", "/upvotesong");
             xhr.setRequestHeader("user", $scope.userMail);
@@ -138,6 +163,23 @@ app.controller("songListController", function ($scope, $http, $location) {
             showLogInModal();
         }
     }
+    
+    $scope.showSongsOfUser = function(user) {
+        $scope.showSongsOfUserMessage = "Hitlijst van " + getUserByMail(user);
+        
+        var tempArray = [];
+        for (i=0;i<$scope.songList.length;i++) {
+            if ($scope.songList[i].userMail === user) {
+                tempArray.push($scope.songList[i]);
+            }
+        }    
+        $scope.songList = tempArray;
+    }
+    
+    $scope.searchArtist = function(artist) {
+        $scope.search = artist;
+    }
+    
     $scope.logOut = function () {
         localStorage.setItem('songs-user', "");
         location.reload();
@@ -312,7 +354,6 @@ app.controller("songListController", function ($scope, $http, $location) {
                         var form = modal.find(".form");
                         var items = form.serializeJSON();
                         if (items.songTitle && items.songArtist) {
-                            console.log("sending post to edit song");
                             var xhr = new XMLHttpRequest()
                             xhr.open("POST", "/editsong");
                             xhr.setRequestHeader("title", song.title);
@@ -352,7 +393,6 @@ app.controller("songListController", function ($scope, $http, $location) {
                             if (!items.songArtist) {
                                 jq('#em_artist').text("Vul alsjeblieft de artist van het lied in.");
                                 jq('#songArtist').attr('value', "");
-                                console.log("aangepast");
                             }
                             else {
                                 jq('#em_artist').attr('value', items.songArtist);

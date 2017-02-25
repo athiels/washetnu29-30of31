@@ -17,10 +17,15 @@
     <div id="main">
         <div>
             <div id="layout" class="container-fluid list">
-                <input type="text" ng-model="search" class="form-control has-feedback" placeholder="Zoek een titel of een artiest" id="search">
+                <input type="text" ng-model="search" class="form-control has-feedback" placeholder="Zoek in de hitlijst" id="search">
                 <div class="pointer" ng-click="addSong()" id="addSongLink"><span class="glyphicon glyphicon-music"></span> Liedje toevoegen </div>
-                <div ng-repeat="song in songList | filter:search:strict | orderBy:'-upvotes'" class="song">
-                    <h3>{{$index+1}}. <span class="hidden-xs"><strong>{{song.artist}}</strong> - </span>{{song.title}}
+                <div>
+                    <h2>{{showSongsOfUserMessage}}</h2>
+                    <h4 ng-if="showSongsOfUserMessage.length > 0"><a ng-click="getSongs()">Ga terug naar alle liedjes</a></h4>
+                    <hr> </div>
+                <div ng-repeat="song in songList | filter:search:strict" class="song">
+                    <div>
+                        <h3>{{song.ranking}}. <span class="hidden-xs"><strong class="pointer" ng-click="searchArtist(song.artist)">{{song.artist}}</strong> - </span>{{song.title}}
                     <div style="float:right">                    
                         
                         <h5 ng-if="song.userMail===userMail && !song.yturl"> <a ng-click="addYturl(song)" class="red"> <img src="ytIcon.png" height="20px;" style="margin-top: -5px;"><span class="hidden-xs hidden-sm hidden-md"> Voeg YouTube link toe</span> </a></h5> 
@@ -30,36 +35,54 @@
                         
                     </div>
                     </h3>
-                    <h3 class="hidden-sm hidden-md hidden-lg" style="margin-top:-10px; margin-left:30px;"><strong>{{song.artist}}</strong></h3>
-                    <div class="likeSection" style="margin-top:-7px; margin-left:30px">
-                        <h4>                         
-                            <span style="margin-right:5px;" class="glyphicon glyphicon-thumbs-up upvoteButton"></span>{{song.upvotes}}
-                            <a ng-click="upvoteSong(song)" ng-hide="song.upvotedBy.indexOf(userMail)!=-1" > Like dit liedje</a> 
-                        </h4> </div>
-                    <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
-                        <h6 class="hidden-xs" ng-if="song.userMail===userMail">Toegevoegd door jou</h6>                        
-                        </div>
-                    <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
-                        <h6 class="hidden-xs" ng-if="song.userMail!=userMail">Toegevoegd door {{song.userFname}} {{song.userLname}}</h6> </div>
-                    <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
-                       <h6 ng-if="song.userMail===userMail" ng-click="editTitleAndArtist(song)"><a><span class="glyphicon glyphicon-pencil"></span> Liedje bewerken</a></h6></div>
-                    
+                        <h3 class="hidden-sm hidden-md hidden-lg" style="margin-top:-10px; margin-left:30px;"><strong class="pointer" ng-click="searchArtist(song.artist)">{{song.artist}}</strong></h3>
+                        <div class="likeSection" style="margin-top:-7px; margin-left:30px">
+                            <h5 class="hoverOverLike">                                                      
+                            <div ng-if="song.likeList.length > 2"> 
+                                
+                                <span style="margin-right:5px; font-size:20px;" class="glyphicon glyphicon-thumbs-up" ></span> <span class="upvotes">{{song.upvotes}} - </span>
+                                <a>{{song.likeList[0]}}, {{song.likeList[1]}} en nog {{song.upvotes-2}} vinden dit leuk</a>
+                                <div class="likeList">
+                                    <div ng-repeat="likingUser in song.likeList">
+                                        <span ng-if="$index > 1"> 
+                                            {{likingUser}}
+                                        </span>                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-if="song.likeList.length == 2">
+                                <span style="margin-right:5px; font-size:20px;" class="glyphicon glyphicon-thumbs-up" ></span> <span class="upvotes">{{song.upvotes}} - </span>
+                                {{song.likeList[0]}} en {{song.likeList[1]}} vinden dit leuk
+                            </div>
+                            <div ng-if="song.likeList.length == 1"> 
+                                <span style="margin-right:5px; font-size:20px;" class="glyphicon glyphicon-thumbs-up" ></span> <span class="upvotes">{{song.upvotes}} - </span>
+                                {{song.likeList[0]}} vindt dit leuk
+                            </div>
+                            <div ng-if="song.likeList.length == 0"> 
+                                <span style="margin-right:5px; font-size:20px;" class="glyphicon glyphicon-thumbs-up" ></span> <span class="upvotes">{{song.upvotes}} - </span>
+                                Niemand vindt dit leuk
+                            </div>
+                        </h5>
+                            <h4 style="margin-top=-18px !important"><a ng-click="upvoteSong(song)" ng-hide="song.upvotedBy.indexOf(userMail)!=-1" ><strong> Like dit liedje</strong></a> </h4></div>
+                        <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
+                            <h6 class="hidden-xs" ng-if="song.userMail===userMail">Toegevoegd door <a ng-click="showSongsOfUser(userMail)">jou</a></h6> </div>
+                        <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
+                            <h6 class="hidden-xs" ng-if="song.userMail!=userMail">Toegevoegd door <a ng-click="showSongsOfUser(song.userMail)"> {{song.userFname}} {{song.userLname}}</a></h6> </div>
+                        <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
+                            <h6 ng-if="song.userMail===userMail" ng-click="editTitleAndArtist(song)"><a><span class="glyphicon glyphicon-pencil"></span> Liedje bewerken</a></h6></div>
+                    </div>
                 </div>
-                <hr> </div>
+            </div>
         </div>
     </div>
 </div>
-
 <div class="edit-form" style="display:none;">
     <form class="form-group">
         <div class="form-group" id="editSongTitleDiv">
-             <label for="songTitle">TITEL</label>
-            <input class="form-control" id="editSongTitle" name="songTitle">
-        </div>
+            <label for="songTitle">TITEL</label>
+            <input class="form-control" id="editSongTitle" name="songTitle"> </div>
     </form>
-    
 </div>
-
 <div class="form-content" style="display:none;">
     <form class="form" role="form">
         <div class="form-group">

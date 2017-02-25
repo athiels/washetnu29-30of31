@@ -11,14 +11,7 @@
 body {
     font-family: japofont;
     background-image: url(background.jpg);
-    -webkit-background-size: 100%; 
-    -moz-background-size: 100%; 
-    -o-background-size: 100%; 
-    background-size: 100%; 
-    -webkit-background-size: cover; 
-    -moz-background-size: cover; 
-    -o-background-size: cover; 
-    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .margin {
@@ -319,7 +312,7 @@ th:nth-child(7) {
 
 #addSongLink {
     font-size: 20px;
-     align-content: center;
+    align-content: center;
     border-radius: 15px;
     padding-left: 15px;
     width: 230px;
@@ -518,10 +511,6 @@ hr {
     font-size: 20px;
 }
 
-.upvotes {
-    float: right;
-}
-
 @media(min-width: 1000px) {
     .likeSection {
         font-size: 200% !important;
@@ -606,4 +595,24 @@ p {
 }
 ::-webkit-scrollbar-thumb:window-inactive {
     background: rgba(200, 200, 200, 0.4);
+}
+
+.likeList {
+    display: none;
+    background-color: #333333;
+    color: white;
+    position: absolute;
+    border-radius: 8px;
+    padding: 6px;
+    z-index: 1000;
+    margin-left: 25px;
+}
+
+.hoverOverLike:hover > div > .likeList {
+    display: block;
+}
+
+.upvotes {
+    font-size: 20px;
+    font-family: menufont;    
 }

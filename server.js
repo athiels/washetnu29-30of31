@@ -151,7 +151,7 @@ app.post('/editsong', function (req, res) {
     var artist = req.headers['artist'].toLowerCase();
     var editTitle = req.headers['edittitle'].toLowerCase();
     var editArtist = req.headers['editartist'].toLowerCase();
-    var editYturl = req.headers['yturl'];
+    var editYturl = req.headers['edityturl'];
     console.log("Searching for "+artist+" - "+title);
     Song.findOne({
         title: title
@@ -163,7 +163,7 @@ app.post('/editsong', function (req, res) {
         }
         else if (doc) {
             doc.title = editTitle;
-            doc.artis = editArtist;
+            doc.artist = editArtist;
             doc.yturl = editYturl;
             doc.save();
             res.status(200).end();
