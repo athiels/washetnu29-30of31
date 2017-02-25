@@ -12,6 +12,7 @@ body {
     font-family: japofont;
     background-image: url(background.jpg);
     background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .margin {
@@ -306,7 +307,7 @@ th:nth-child(7) {
 
 @media(max-width: 768px) {
     #search {
-      width: 300px;
+        width: 300px;
     }
 }
 
@@ -325,10 +326,10 @@ th:nth-child(7) {
     color: #555;
     border: 1px solid #ccc;
     border-radius: 15px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
-    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
 .percentage {
@@ -580,6 +581,7 @@ p {
 ::-webkit-scrollbar {
     width: 12px;
 }
+
 ::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     -webkit-border-top-left-radius: 10px;
@@ -587,12 +589,14 @@ p {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
 }
+
 ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px;
     border-radius: 10px;
     background: rgba(100, 100, 100, 0.7);
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
 }
+
 ::-webkit-scrollbar-thumb:window-inactive {
     background: rgba(200, 200, 200, 0.4);
 }
@@ -614,5 +618,19 @@ p {
 
 .upvotes {
     font-size: 20px;
-    font-family: menufont;    
+    font-family: menufont;
+}
+
+.newSongMessage {
+    background-color: rgba(95, 158, 160, 0.9);
+    color: white;
+    position: fixed;
+    top: 25%;
+    left: 50%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
+    border-radius: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    z-index: 1000;
 }

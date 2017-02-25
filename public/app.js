@@ -9,17 +9,16 @@ app.config(function ($routeProvider) {
         templateUrl: "watIsDezeWebsite.html"
     });
 });
-app.controller("songListController", function ($scope, $http, $location, $filter) {
+app.controller("songListController", function ($scope, $http, $location, $filter, $interval) {
     $scope.userMail = localStorage.getItem('songs-user');
     $scope.userFname;
     $scope.userLname;
-    $scope.trustSrc = function (src) {
-        return $sce.trustAsResourceUrl(src);
-    }
     $scope.showSongsOfUserMessage = "";
     $scope.admin = false;
     $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@skynet.be', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
 
+    jq( "#showSongAddedMessage" ).hide();
+    
     function getUserInfo() {
         $scope.userMail = localStorage.getItem('songs-user');
         if ($scope.userMail) {
@@ -78,7 +77,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             }
         }
     }
-    $scope.getSongs = function () {
+    $scope.getSongs = function (songs) {
         $scope.showSongsOfUserMessage = "";
         var songList = [];
         var xhr = new XMLHttpRequest()
@@ -86,36 +85,55 @@ app.controller("songListController", function ($scope, $http, $location, $filter
         xhr.onload = function () {
             if (xhr.status === 200) {
                 var songs = JSON.parse(xhr.responseText);
-                $scope.songList = songs.songs[0];
-                $scope.songList = $filter('orderBy')($scope.songList, '-upvotes');
-                for (i = 0; i < $scope.songList.length; i++) {
-                    $scope.songList[i].title = capitalizeFirstLetter($scope.songList[i].title);
-                    $scope.songList[i].artist = capitalizeFirstLetter($scope.songList[i].artist);
-                    $scope.songList[i].userFname = capitalizeFirstLetter($scope.songList[i].userFname);
-                    $scope.songList[i].userLname = capitalizeFirstLetter($scope.songList[i].userLname);
-                    $scope.songList[i].ranking = i + 1;
-                    $scope.songList[i].likeList = [];
-                    for (j = 0; j < $scope.songList[i].upvotedBy.length; j++) {
-                        if ($scope.songList[i].upvotedBy[j] === $scope.userMail) {
-                            var u = "Jij";
-                        }
-                        else {
-                            var u = getUserByMail($scope.songList[i].upvotedBy[j]);
-                        }
-                        $scope.songList[i].likeList.push(u);
-                    }
-                    for (j = 0; j < $scope.songList[i].likeList.length; j++) {
-                        if ($scope.songList[i].likeList[j] === "Jij") {
-                            $scope.songList[i].likeList[j] = $scope.songList[i].likeList[0];
-                            $scope.songList[i].likeList[0] = "Jij";
-                        }
-                    }
-                }
-                $scope.$apply();
+                makePlaylist(songs.songs[0]);
             }
         }
         xhr.send();
-    }    
+    }
+    var refreshSongList = $interval(function () {
+        console.log("refreshing");
+        $http({
+            method: 'GET'
+            , url: '/getsongs'
+        }).then(function (response) {
+            var songs = response.data.songs[0];
+            jq("#showSongAddedMessage").hide();
+            if ($scope.songList.length < songs.length) {
+                jq("#showSongAddedMessage").show();
+                $scope.safeApply();
+                makePlaylist(songs);
+            }
+        });
+    }, 10000);
+
+    function makePlaylist(songs) {
+        $scope.songList = songs;
+        $scope.songList = $filter('orderBy')($scope.songList, '-upvotes');
+        for (i = 0; i < $scope.songList.length; i++) {
+            $scope.songList[i].title = capitalizeFirstLetter($scope.songList[i].title);
+            $scope.songList[i].artist = capitalizeFirstLetter($scope.songList[i].artist);
+            $scope.songList[i].userFname = capitalizeFirstLetter($scope.songList[i].userFname);
+            $scope.songList[i].userLname = capitalizeFirstLetter($scope.songList[i].userLname);
+            $scope.songList[i].ranking = i + 1;
+            $scope.songList[i].likeList = [];
+            for (j = 0; j < $scope.songList[i].upvotedBy.length; j++) {
+                if ($scope.songList[i].upvotedBy[j] === $scope.userMail) {
+                    var u = "Jij";
+                }
+                else {
+                    var u = getUserByMail($scope.songList[i].upvotedBy[j]);
+                }
+                $scope.songList[i].likeList.push(u);
+            }
+            for (j = 0; j < $scope.songList[i].likeList.length; j++) {
+                if ($scope.songList[i].likeList[j] === "Jij") {
+                    $scope.songList[i].likeList[j] = $scope.songList[i].likeList[0];
+                    $scope.songList[i].likeList[0] = "Jij";
+                }
+            }
+        }
+        $scope.safeApply();
+    }
     $scope.addSong = function () {
         if ($scope.userMail) {
             showAddSongModal();
@@ -556,4 +574,15 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             });
         }).scroll();
     });
+    $scope.safeApply = function (fn) {
+        var phase = this.$root.$$phase;
+        if (phase == '$apply' || phase == '$digest') {
+            if (fn && (typeof (fn) === 'function')) {
+                fn();
+            }
+        }
+        else {
+            this.$apply(fn);
+        }
+    };
 });
