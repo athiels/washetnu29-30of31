@@ -22,21 +22,23 @@ app.controller("songListController", function ($scope, $http, $location, $filter
 
     function getUserInfo() {
         $scope.userMail = localStorage.getItem('songs-user');
-        var xhr = new XMLHttpRequest()
-        xhr.open("GET", "/getuserinfo");
-        xhr.setRequestHeader("mail", $scope.userMail);
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                var userInfo = JSON.parse(xhr.responseText);
-                $scope.userFname = userInfo.userInfo[0][0].fname;
-                $scope.userLname = userInfo.userInfo[0][0].lname;
-                if ($scope.admins.indexOf($scope.userMail) >= 0) {
-                    $scope.admin = true;
+        if ($scope.userMail) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/getuserinfo");
+            xhr.setRequestHeader("mail", $scope.userMail);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    var userInfo = JSON.parse(xhr.responseText);
+                    $scope.userFname = userInfo.userInfo[0][0].fname;
+                    $scope.userLname = userInfo.userInfo[0][0].lname;
+                    if ($scope.admins.indexOf($scope.userMail) >= 0) {
+                        $scope.admin = true;
+                    }
+                    $scope.$apply();
                 }
-                $scope.$apply();
             }
+            xhr.send();
         }
-        xhr.send();
     }
     getUserInfo();
     $scope.goToAllUsers = function () {
@@ -75,8 +77,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             }
         }
     }
-
-    $scope.getSongs = function() {
+    $scope.getSongs = function () {
         $scope.showSongsOfUserMessage = "";
         var songList = [];
         var xhr = new XMLHttpRequest()
@@ -105,7 +106,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                     for (j = 0; j < $scope.songList[i].likeList.length; j++) {
                         if ($scope.songList[i].likeList[j] === "Jij") {
                             $scope.songList[i].likeList[j] = $scope.songList[i].likeList[0];
-                            $scope.songList[i].likeList[0] = "Jij"; 
+                            $scope.songList[i].likeList[0] = "Jij";
                         }
                     }
                 }
@@ -163,23 +164,19 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             showLogInModal();
         }
     }
-    
-    $scope.showSongsOfUser = function(user) {
+    $scope.showSongsOfUser = function (user) {
         $scope.showSongsOfUserMessage = "Hitlijst van " + getUserByMail(user);
-        
         var tempArray = [];
-        for (i=0;i<$scope.songList.length;i++) {
+        for (i = 0; i < $scope.songList.length; i++) {
             if ($scope.songList[i].userMail === user) {
                 tempArray.push($scope.songList[i]);
             }
-        }    
+        }
         $scope.songList = tempArray;
     }
-    
-    $scope.searchArtist = function(artist) {
+    $scope.searchArtist = function (artist) {
         $scope.search = artist;
     }
-    
     $scope.logOut = function () {
         localStorage.setItem('songs-user', "");
         location.reload();
