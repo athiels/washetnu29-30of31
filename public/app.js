@@ -205,6 +205,20 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                         var form = modal.find(".form");
                         var items = form.serializeJSON();
                         if (items.songTitle && items.songArtist) {
+                            for (i = 0; i < $scope.songList.length; i++) {
+                                if (comareNames(items.songTitle, $scope.songList[i].title) * 100 > 80) {
+                                    for (j = 0; j < $scope.songList.length; j++) {
+                                        if (comareNames(items.songArtist, $scope.songList[i].artist) * 100 > 80) {
+                                            bootbox.alert({
+                                                message: "<h2>Dit nummer staat al in onze hitlijst!</h2><h4>Je kan altijd zoeken naar een bepaald nummer door de titel of de artiest in het zoekveld te typen.</h4>"
+                                                , callback: function () {
+                                                }
+                                            });
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
                             var xhr = new XMLHttpRequest()
                             xhr.open("POST", "/addsong");
                             xhr.setRequestHeader("usermail", $scope.userMail);
@@ -237,13 +251,12 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                             showAddSongModal();
                         }
                     }
-          }
-                , {
+                                }
+                                , {
                     label: "Sluiten"
                     , className: "btn btn-default pull-left"
                     , callback: function () {}
-          }
-        ]
+                                }]
             , show: false
             , onEscape: function () {
                 modal.modal("hide");
@@ -410,6 +423,42 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             }
         });
         modal.modal("show");
+    }
+
+    function comareNames(s1, s2) {
+        var longer = s1;
+        var shorter = s2;
+        if (s1.length < s2.length) {
+            longer = s2;
+            shorter = s1;
+        }
+        var longerLength = longer.length;
+        if (longerLength == 0) {
+            return 1.0;
+        }
+        return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
+    }
+
+    function editDistance(s1, s2) {
+        s1 = s1.toLowerCase();
+        s2 = s2.toLowerCase();
+        var costs = new Array();
+        for (var i = 0; i <= s1.length; i++) {
+            var lastValue = i;
+            for (var j = 0; j <= s2.length; j++) {
+                if (i == 0) costs[j] = j;
+                else {
+                    if (j > 0) {
+                        var newValue = costs[j - 1];
+                        if (s1.charAt(i - 1) != s2.charAt(j - 1)) newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                        costs[j - 1] = lastValue;
+                        lastValue = newValue;
+                    }
+                }
+            }
+            if (i > 0) costs[s2.length] = lastValue;
+        }
+        return costs[s2.length];
     }
     jQuery.fn.serializeJSON = function () {
         var json = {};
