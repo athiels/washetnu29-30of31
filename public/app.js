@@ -15,9 +15,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
     $scope.userLname;
     $scope.showSongsOfUserMessage = "";
     $scope.admin = false;
-    $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@skynet.be', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
-
-    jq( "#showSongAddedMessage" ).hide();
+    $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@top-printing.be', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
     
     function getUserInfo() {
         $scope.userMail = localStorage.getItem('songs-user');
@@ -91,15 +89,16 @@ app.controller("songListController", function ($scope, $http, $location, $filter
         xhr.send();
     }
     var refreshSongList = $interval(function () {
-        console.log("refreshing");
+        var s = document.getElementById('search').value
+        console.log(s);
+        if (s) return;
+        console.log("Refreshing");
         $http({
             method: 'GET'
             , url: '/getsongs'
         }).then(function (response) {
             var songs = response.data.songs[0];
-            jq("#showSongAddedMessage").hide();
             if ($scope.songList.length < songs.length) {
-                jq("#showSongAddedMessage").show();
                 $scope.safeApply();
                 makePlaylist(songs);
             }
@@ -152,7 +151,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             xhr.setRequestHeader("upvotes", song.upvotes + 1);
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    location.reload()
+                    $scope.getSongs();
                 }
             }
             xhr.send();
