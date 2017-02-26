@@ -171,7 +171,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                 xhr.setRequestHeader("yturl", result);
                 xhr.onload = function () {
                     if (xhr.status === 200) {
-                        location.reload()
+                        $scope.getSongs();
                     }
                 }
                 xhr.send();
@@ -252,7 +252,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                                     bootbox.alert({
                                         message: "<h3>'" + items.songTitle + "' van '" + items.songArtist + "' is toegevoegd aan onze muzieklijst!</h3>"
                                         , callback: function () {
-                                            location.reload();
+                                            $scope.getSongs();
                                         }
                                     })
                                 }
@@ -443,7 +443,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                                         , callback: function () {
                                             jq('#songTitle').attr('value', "");
                                             jq('#songArtist').attr('value', "");
-                                            location.reload();
+                                            $scope.getSongs();
                                         }
                                     })
                                 }
