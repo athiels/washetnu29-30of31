@@ -14,9 +14,10 @@ app.controller("songListController", function ($scope, $http, $location, $filter
     $scope.userFname;
     $scope.userLname;
     $scope.showSongsOfUserMessage = "";
+    $scope.showingSongsOfUser = false;
     $scope.admin = false;
-    $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@top-printing.be', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
-    
+    $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@top-printing.eu', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
+
     function getUserInfo() {
         $scope.userMail = localStorage.getItem('songs-user');
         if ($scope.userMail) {
@@ -77,6 +78,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
     }
     $scope.getSongs = function (songs) {
         $scope.showSongsOfUserMessage = "";
+        $scope.showingSongsOfUser = false;
         var songList = [];
         var xhr = new XMLHttpRequest()
         xhr.open("GET", "/getsongs");
@@ -91,7 +93,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
     var refreshSongList = $interval(function () {
         var s = document.getElementById('search').value
         console.log(s);
-        if (s) return;
+        if (s || $scope.showingSongsOfUser) return;
         console.log("Refreshing");
         $http({
             method: 'GET'
@@ -163,18 +165,26 @@ app.controller("songListController", function ($scope, $http, $location, $filter
     $scope.addYturl = function (song) {
         if ($scope.userMail) {
             bootbox.prompt("Vul hieronder de link (url) naar de YouTube video van <strong>'" + song.artist + "' - '" + song.title + "'</strong> in:", function (result) {
-                var xhr = new XMLHttpRequest()
-                xhr.open("POST", "/addyturl");
-                xhr.setRequestHeader("user", $scope.userMail);
-                xhr.setRequestHeader("title", song.title);
-                xhr.setRequestHeader("artist", song.artist);
-                xhr.setRequestHeader("yturl", result);
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        $scope.getSongs();
+                if (result.indexOf("https://www.youtube.com/") >= 0) {
+                    var xhr = new XMLHttpRequest()
+                    xhr.open("POST", "/addyturl");
+                    xhr.setRequestHeader("user", $scope.userMail);
+                    xhr.setRequestHeader("title", song.title);
+                    xhr.setRequestHeader("artist", song.artist);
+                    xhr.setRequestHeader("yturl", result);
+                    xhr.onload = function () {
+                        if (xhr.status === 200) {
+                            $scope.getSongs();
+                        }
                     }
+                    xhr.send();
                 }
-                xhr.send();
+                else {
+                    bootbox.alert({
+                        message: "<h2>Deze YouTube link is niet geldig</h2><h4>Kopiëer de URL van de YouTube video en plak hem hier.</h4>"
+                        , callback: function () {}
+                    });
+                }
             });
         }
         else {
@@ -182,6 +192,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
         }
     }
     $scope.showSongsOfUser = function (user) {
+        $scope.showingSongsOfUser = true;
         $scope.showSongsOfUserMessage = "Hitlijst van " + getUserByMail(user);
         var tempArray = [];
         for (i = 0; i < $scope.songList.length; i++) {
@@ -211,9 +222,15 @@ app.controller("songListController", function ($scope, $http, $location, $filter
         jq(".bootbox .btn-primary").click();
     });
 
-    function showAddSongModal() {
-        jq('#songTitle').attr('value', "");
-        jq('#songArtist').attr('value', "");
+    function showAddSongModal(reopened) {
+        if (!reopened) {
+            jq('#songTitle').attr('value', "");
+            jq('#songArtist').attr('value', "");
+            jq('#em_yturl').attr('value', "");
+            jq('#em_title').text("");
+            jq('#em_artist').text("");
+            jq('#em_yturl').text("");
+        }
         var title = "<h1>Zelf een liedje toevoegen</h1><h4>Titel en artiest zijn verplicht. <br>Je mag ook een link (URL) van een YouTube filmpje invullen!</h4>"
         var modal = bootbox.dialog({
             message: jq(".form-content").html()
@@ -225,6 +242,17 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                     , callback: function () {
                         var form = modal.find(".form");
                         var items = form.serializeJSON();
+                        if (items.songYturl) {
+                            console.log(items.songYturl.indexOf("https://www.youtube.com/"));
+                            if ((items.songYturl.indexOf("https://www.youtube.com/")) < 0) {
+                                jq('#em_yturl').text("Deze YouTube link is niet geldig.");
+                                jq('#songTitle').attr('value', items.songTitle);
+                                jq('#songArtist').attr('value', items.songArtist);
+                                jq('#songYturl').attr('value', items.songYturl);
+                                showAddSongModal(true);
+                                return;
+                            }
+                        }
                         if (items.songTitle && items.songArtist) {
                             for (i = 0; i < $scope.songList.length; i++) {
                                 if (comareNames(items.songTitle, $scope.songList[i].title) * 100 > 80) {
@@ -253,6 +281,9 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                                         message: "<h3>'" + items.songTitle + "' van '" + items.songArtist + "' is toegevoegd aan onze muzieklijst!</h3>"
                                         , callback: function () {
                                             $scope.getSongs();
+                                            jq('#songTitle').attr('value', "");
+                                            jq('#songArtist').attr('value', "");
+                                            jq('#songYturl').attr('value', "");
                                         }
                                     })
                                 }
@@ -268,7 +299,10 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                             if (!items.songArtist) {
                                 jq('#em_artist').text("Vul alsjeblieft de artist van het lied in.");
                             }
-                            showAddSongModal();
+                            jq('#songTitle').attr('value', items.songTitle);
+                            jq('#songArtist').attr('value', items.songArtist);
+                            jq('#songYturl').attr('value', items.songYturl);
+                            showAddSongModal(true);
                         }
                     }
                                 }
@@ -443,6 +477,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                                         , callback: function () {
                                             jq('#songTitle').attr('value', "");
                                             jq('#songArtist').attr('value', "");
+                                            jq('#songYturl').attr('value', "");
                                             $scope.getSongs();
                                         }
                                     })

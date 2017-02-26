@@ -40,11 +40,10 @@
                         <h3 class="hidden-sm hidden-md hidden-lg" style="margin-top:-10px; margin-left:30px;"><strong class="pointer" ng-click="searchArtist(song.artist)">{{song.artist}}</strong></h3>
                         <div class="likeSection" style="margin-top:-7px; margin-left:30px">
                             <h5 class="hoverOverLike">                                                      
-                            <div ng-if="song.likeList.length > 2"> 
-                                
+                            <div ng-if="song.likeList.length > 2">                                 
                                 <span style="margin-right:5px; font-size:20px;" class="glyphicon glyphicon-thumbs-up" ></span> <span class="upvotes">{{song.upvotes}} - </span>
                                 <a ng-if="userMail">{{song.likeList[0]}}, {{song.likeList[1]}} en nog {{song.upvotes-2}} vinden dit leuk</a>
-                                <div class="likeList">
+                                <div ng-if="userMail" class="likeList">
                                     <div ng-repeat="likingUser in song.likeList">
                                         <span ng-if="$index > 1"> 
                                             {{likingUser}}
@@ -91,6 +90,7 @@
         <div class="form-group">
             <label for="songYturl">YOUTUBE LINK - niet verplicht</label>
             <input class="form-control" id="songYturl" name="songYturl"> </div>
+        <h4 class="red" id="em_yturl"></h4>        
     </form>
 </div>
 <div class="inlog-form" style="display:none;">
