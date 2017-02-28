@@ -148,18 +148,23 @@ app.controller("songListController", function ($scope, $http, $location, $filter
     }
     $scope.upvoteSong = function (song) {
         if ($scope.userMail) {
-            var xhr = new XMLHttpRequest()
-            xhr.open("POST", "/upvotesong");
-            xhr.setRequestHeader("user", $scope.userMail);
-            xhr.setRequestHeader("title", song.title);
-            xhr.setRequestHeader("artist", song.artist);
-            xhr.setRequestHeader("upvotes", song.upvotes + 1);
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    $scope.getSongs();
+            if (jq.inArray($scope.userMail, song.upvotedBy)) {
+                song.upvotedBy.push($scope.userMail);
+                var xhr = new XMLHttpRequest()
+                xhr.open("POST", "/upvotesong");
+                xhr.setRequestHeader("user", $scope.userMail);
+                xhr.setRequestHeader("title", song.title);
+                xhr.setRequestHeader("artist", song.artist);
+                xhr.setRequestHeader("upvotes", song.upvotes + 1);
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        $scope.getSongs();
+                    }
                 }
+                xhr.send();
+            } else {
+                console.log("Je hebt dit al geliket");
             }
-            xhr.send();
         }
         else {
             showLogInModal();
