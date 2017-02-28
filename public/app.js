@@ -17,6 +17,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
     $scope.showingSongsOfUser = false;
     $scope.admin = false;
     $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@top-printing.eu', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
+    $scope.showYoutubeResults = false;
 
     function getUserInfo() {
         $scope.userMail = localStorage.getItem('songs-user');
@@ -92,9 +93,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
     }
     var refreshSongList = $interval(function () {
         var s = document.getElementById('search').value
-        console.log(s);
         if (s || $scope.showingSongsOfUser) return;
-        console.log("Refreshing");
         $http({
             method: 'GET'
             , url: '/getsongs'
@@ -192,6 +191,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
         }
     }
     $scope.showSongsOfUser = function (user) {
+        $scope.scrollToTop();
         $scope.showingSongsOfUser = true;
         $scope.showSongsOfUserMessage = "Hitlijst van " + getUserByMail(user);
         var tempArray = [];
@@ -217,6 +217,60 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             message: jq(".info").html()
         })
     }
+    $scope.searchYouTube = function () {
+        jq.get("https://www.googleapis.com/youtube/v3/search", {
+            key: "AIzaSyB8OpxPegwyOFMx6sh0VrXBh2JKLSUe3YY"
+            , part: "snippet"
+            , type: "video"
+            , q: $scope.search
+        }, function (data) {
+            console.log(data);
+            $scope.youtubeSearchList = [];
+            for (i = 0; i < data.items.length; i++) {
+                var song = {
+                    title: ""
+                    , thumbnail: ""
+                    , yturl: ""
+                };
+                song.title = data.items[i].snippet.title;
+                song.title = song.title.replace(/\s*\(.*?\)\s*/g, '');
+                if (song.title.length > 50) {
+                    song.title = song.title.substr(0, 50) + "...";
+                }
+                song.thumbnail = data.items[i].snippet.thumbnails.medium.url;
+                song.yturl = "https://www.youtube.com/watch?v=" + data.items[i].id.videoId;
+                $scope.youtubeSearchList.push(song);
+            }
+            $scope.showYoutubeResults = true;
+            $scope.safeApply();
+        });
+    }
+    $scope.$watch('search', function () {
+        if ($scope.search == "") {
+            $scope.showYoutubeResults = false;
+        }
+    }, true);
+    $scope.addYoutubeSong = function (song) {
+        var artist = "";
+        var title = "";
+        if (song.title.indexOf("-") > 0) {
+            artist = song.title.substr(0, song.title.indexOf("-"));
+            title = song.title.substr(song.title.indexOf("-") + 2, song.title.length);
+        }
+        jq('#songTitle').attr('value', title.trim());
+        jq('#songArtist').attr('value', artist.trim());
+        jq('#songYturl').attr('value', song.yturl);
+        showAddSongModal(true);
+    }
+    $scope.resetSearch = function () {
+        $scope.search = "";
+    }
+    $scope.scrollToTop = function () {
+        jq("html, body").animate({
+            scrollTop: 0
+        }, "slow");
+        return false;
+    }
     jq(document).on("submit", ".bootbox form", function (e) {
         e.preventDefault();
         jq(".bootbox .btn-primary").click();
@@ -226,7 +280,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
         if (!reopened) {
             jq('#songTitle').attr('value', "");
             jq('#songArtist').attr('value', "");
-            jq('#em_yturl').attr('value', "");
+            jq('#songYturl').attr('value', "");
             jq('#em_title').text("");
             jq('#em_artist').text("");
             jq('#em_yturl').text("");
@@ -243,7 +297,6 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                         var form = modal.find(".form");
                         var items = form.serializeJSON();
                         if (items.songYturl) {
-                            console.log(items.songYturl.indexOf("https://www.youtube.com/"));
                             if ((items.songYturl.indexOf("https://www.youtube.com/")) < 0) {
                                 jq('#em_yturl').text("Deze YouTube link is niet geldig.");
                                 jq('#songTitle').attr('value', items.songTitle);
@@ -619,4 +672,15 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             this.$apply(fn);
         }
     };
+    jq(document).ready(function () {
+        //Check to see if the window is top if not then display button
+        jq(window).scroll(function () {
+            if (jq(this).scrollTop() > 100) {
+                jq('.scrollToTop').fadeIn();
+            }
+            else {
+                jq('.scrollToTop').fadeOut();
+            }
+        });
+    });
 });

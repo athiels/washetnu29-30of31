@@ -15,21 +15,34 @@
         </div>
     </div>
     <div id="main">
-        <div>
-            <div id="layout" class="container-fluid list">
-                <input type="text" ng-model="search" class="form-control has-feedback" placeholder="Zoek in de hitlijst" id="search">
-                <div class="pointer" ng-click="addSong()" id="addSongLink"><span class="glyphicon glyphicon-music"></span> Liedje toevoegen </div>
+        <div id="layout" class="container-fluid list">
+            <div class="row" style="margin-top:15px;">
+                <input type="text" ng-model="search" class="form-control" placeholder="Zoek een titel of een artiest" id="search">
+                <input type="button" class="searchButton form-control" ng-click="searchYouTube()" value="Zoek op YouTube"> </div>
+                <h4 ng-if="showYoutubeResults"><a ng-click="resetSearch()">Ga terug naar alle liedjes</a></h4>
+            <div>
+                <h2>{{showSongsOfUserMessage}}</h2>
+                <h4 ng-if="showSongsOfUserMessage.length > 0"><a ng-click="getSongs()">Ga terug naar alle liedjes</a></h4>
+                <div ng-hide="search">
+                    <h4 ng-if="songList.length == 0">Geen liedjes gevonden</h4>
+                    <h4 ng-if="songList.length == 1">{{songList.length}} liedje gevonden</h4>
+                    <h4 ng-if="songList.length > 1">{{songList.length}} liedjes gevonden</h4> </div>
+                <hr> </div>
+            <div ng-if="showYoutubeResults">
+                <div ng-repeat="song in youtubeSearchList">
+                    <div class="row" style="margin-bottom:10px; margin-left:0px;">
+                        <a href="{{song.yturl}}" target="_blank"> <img class="youtubeThumbnail" src="{{song.thumbnail}}" width="160px" height="120px"> </a>
+                        <div style="margin-left: 20px !important; float:left;">
+                            <a href="{{song.yturl}}" target="_blank" class="appearNoLink">
+                                <h3 style="overflow: hidden; white-space: nowrap;">{{song.title}}</h3> </a>
+                            <button class="pointer whiteButton" ng-click="addYoutubeSong(song)"><span class="glyphicon glyphicon-music"></span> Voeg toe aan hilijst </button>
+                        </div>
+                    </div>
+                </div>
+                <hr> </div>
+            <div ng-repeat="song in songList | filter:search:strict" class="song">
                 <div>
-                    <h2>{{showSongsOfUserMessage}}</h2>
-                    <h4 ng-if="showSongsOfUserMessage.length > 0"><a ng-click="getSongs()">Ga terug naar alle liedjes</a></h4>
-                    <div ng-hide="search">
-                        <h4 ng-if="songList.length == 0">Geen liedjes gevonden</h4>
-                        <h4 ng-if="songList.length == 1">{{songList.length}} liedje gevonden</h4>
-                        <h4 ng-if="songList.length > 1">{{songList.length}} liedjes gevonden</h4> </div>
-                    <hr> </div>
-                <div ng-repeat="song in songList | filter:search:strict" class="song">
-                    <div>
-                        <h3>{{song.ranking}}. <span class="hidden-xs"><strong class="pointer" ng-click="searchArtist(song.artist)">{{song.artist}}</strong> - </span>{{song.title}}
+                    <h3>{{song.ranking}}. <span class="hidden-xs"><strong class="pointer" ng-click="searchArtist(song.artist)">{{song.artist}}</strong> - </span>{{song.title}}
                     <div style="float:right">                    
                         
                         <h5 ng-if="song.userMail===userMail && !song.yturl"> <a ng-click="addYturl(song)" class="red"> <img src="ytIcon.png" height="20px;" style="margin-top: -5px;"><span class="hidden-xs hidden-sm hidden-md"> Voeg YouTube link toe</span> </a></h5> 
@@ -37,9 +50,9 @@
                         <h4  ng-if="song.yturl"> <a href="{{song.yturl}}" target="_blank"> <img src="ytIcon.png" ng-show="song.yturl" height="20px;" style="margin-top: -5px;" title="Beluister '{{song.title}}' op YouTube"><span class="hidden-xs hidden-sm hidden-md"> Beluister op YouTube</span> </a></h4>                                                
                     </div>
                     </h3>
-                        <h3 class="hidden-sm hidden-md hidden-lg" style="margin-top:-10px; margin-left:30px;"><strong class="pointer" ng-click="searchArtist(song.artist)">{{song.artist}}</strong></h3>
-                        <div class="likeSection" style="margin-top:-7px; margin-left:30px">
-                            <h5 class="hoverOverLike">                                                      
+                    <h3 class="hidden-sm hidden-md hidden-lg" style="margin-top:-10px; margin-left:30px;"><strong class="pointer" ng-click="searchArtist(song.artist)">{{song.artist}}</strong></h3>
+                    <div class="likeSection" style="margin-top:-7px; margin-left:30px">
+                        <h5 class="hoverOverLike">                                                      
                             <div ng-if="song.likeList.length > 2">                                 
                                 <span style="margin-right:5px; font-size:20px;" class="glyphicon glyphicon-thumbs-up" ></span> <span class="upvotes">{{song.upvotes}} - </span>
                                 <a ng-if="userMail">{{song.likeList[0]}}, {{song.likeList[1]}} en nog {{song.upvotes-2}} vinden dit leuk</a>
@@ -64,17 +77,17 @@
                                 <span ng-if="userMail">Niemand vindt dit leuk</span>
                             </div>
                         </h5>
-                            <h4 style="margin-top=-18px !important"><a ng-click="upvoteSong(song)" ng-hide="song.upvotedBy.indexOf(userMail)!=-1" ><strong> Like dit liedje</strong></a> </h4></div>
-                        <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
-                            <h6 class="hidden-xs" ng-if="song.userMail===userMail">Toegevoegd door <a ng-click="showSongsOfUser(userMail)">jou</a></h6> </div>
-                        <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
-                            <h6 class="hidden-xs" ng-if="song.userMail!=userMail">Toegevoegd door <a ng-click="showSongsOfUser(song.userMail)"> {{song.userFname}} {{song.userLname}}</a></h6> </div>
-                        <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
-                            <h6 ng-if="song.userMail===userMail" ng-click="editTitleAndArtist(song)"><a><span class="glyphicon glyphicon-pencil"></span> Liedje bewerken</a></h6></div>
-                    </div>
+                        <h4 style="margin-top=-18px !important"><a ng-click="upvoteSong(song)" ng-hide="song.upvotedBy.indexOf(userMail)!=-1" ><strong> Like dit liedje</strong></a> </h4></div>
+                    <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
+                        <h6 class="hidden-xs" ng-if="song.userMail===userMail">Toegevoegd door <a ng-click="showSongsOfUser(userMail)">jou</a></h6> </div>
+                    <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
+                        <h6 class="hidden-xs" ng-if="song.userMail!=userMail">Toegevoegd door <a ng-click="showSongsOfUser(song.userMail)"> {{song.userFname}} {{song.userLname}}</a></h6> </div>
+                    <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
+                        <h6 ng-if="song.userMail===userMail" ng-click="editTitleAndArtist(song)"><a><span class="glyphicon glyphicon-pencil"></span> Liedje bewerken</a></h6></div>
                 </div>
             </div>
         </div>
+        <a class="scrollToTop" ng-click="scrollToTop()">Scroll To Top</a>
     </div>
 </div>
 <div class="form-content" style="display:none;">
@@ -90,8 +103,7 @@
         <div class="form-group">
             <label for="songYturl">YOUTUBE LINK - niet verplicht</label>
             <input class="form-control" id="songYturl" name="songYturl"> </div>
-        <h4 class="red" id="em_yturl"></h4>        
-    </form>
+        <h4 class="red" id="em_yturl"></h4> </form>
 </div>
 <div class="inlog-form" style="display:none;">
     <form class="form" role="form">
