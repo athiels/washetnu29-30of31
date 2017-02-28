@@ -264,7 +264,12 @@ app.controller("songListController", function ($scope, $http, $location, $filter
         jq('#songTitle').attr('value', title.trim());
         jq('#songArtist').attr('value', artist.trim());
         jq('#songYturl').attr('value', song.yturl);
-        showAddSongModal(true);
+        if ($scope.userMail) {
+            showAddSongModal(true);
+        }
+        else {
+            showLogInModal();
+        }
     }
     $scope.resetSearch = function () {
         $scope.search = "";
@@ -341,6 +346,8 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                                             jq('#songTitle').attr('value', "");
                                             jq('#songArtist').attr('value', "");
                                             jq('#songYturl').attr('value', "");
+                                            jq('#search').attr('value', "");
+                                            $scope.search = "";
                                         }
                                     })
                                 }
