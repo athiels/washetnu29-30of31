@@ -45,7 +45,7 @@
                     <h3>{{song.ranking}}. <span class="hidden-xs"><strong class="pointer" ng-click="searchArtist(song.artist)">{{song.artist}}</strong> - </span>{{song.title}}
                     <div style="float:right">                    
                         
-                        <h5 ng-if="song.userMail===userMail && !song.yturl"> <a ng-click="addYturl(song)" class="red"> <img src="ytIcon.png" height="20px;" style="margin-top: -5px;"><span class="hidden-xs hidden-sm hidden-md"> Voeg YouTube link toe</span> </a></h5> 
+                        <h5 ng-if="(song.userMail===userMail  || superAdmin) && !song.yturl"> <a ng-click="addYturl(song)" class="red"> <img src="ytIcon.png" height="20px;" style="margin-top: -5px;"><span class="hidden-xs hidden-sm hidden-md"> Voeg YouTube link toe</span> </a></h5> 
                         
                         <h4  ng-if="song.yturl"> <a href="{{song.yturl}}" target="_blank"> <img src="ytIcon.png" ng-show="song.yturl" height="20px;" style="margin-top: -5px;" title="Beluister '{{song.title}}' op YouTube"><span class="hidden-xs hidden-sm hidden-md"> Beluister op YouTube</span> </a></h4>                                                
                     </div>
@@ -83,7 +83,7 @@
                     <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
                         <h6 class="hidden-xs" ng-if="song.userMail!=userMail">Toegevoegd door <a ng-click="showSongsOfUser(song.userMail)"> {{song.userFname}} {{song.userLname}}</a></h6> </div>
                     <div ng-if="song.userFname" style="margin-top: -5px; margin-left:30px">
-                        <h6 ng-if="song.userMail===userMail" ng-click="editTitleAndArtist(song)"><a><span class="glyphicon glyphicon-pencil"></span> Liedje bewerken</a></h6></div>
+                        <h6 ng-if="song.userMail===userMail || superAdmin" ng-click="editTitleAndArtist(song)"><a><span class="glyphicon glyphicon-pencil"></span> Liedje bewerken</a></h6></div>
                 </div>
             </div>
         </div>

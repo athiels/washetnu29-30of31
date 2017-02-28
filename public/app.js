@@ -17,6 +17,10 @@ app.controller("songListController", function ($scope, $http, $location, $filter
     $scope.showingSongsOfUser = false;
     $scope.admin = false;
     $scope.admins = ['tom.vielfont@top-printing.eu', 'jeffrey.verleije@top-printing.eu', 'sc@pharma-pack.be', 'arne.thiels@gmail.com'];
+    $scope.superAdmin = false;
+    if ($scope.userMail == "arne.thiels@gmail.com") {
+        $scope.superAdmin = true;
+    }
     $scope.showYoutubeResults = false;
 
     function getUserInfo() {
