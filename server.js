@@ -131,7 +131,7 @@ app.post('/addsong', function (req, res) {
     var userLname = req.headers['userlname'].toLowerCase();
     var title = req.headers['title'].toLowerCase();
     var artist = req.headers['artist'].toLowerCase();
-    var yturl = req.headers['yturl'].toLowerCase();
+    var yturl = req.headers['yturl'];
     var newSong = new Song({
         userMail: userMail
         , userFname: userFname
