@@ -307,7 +307,7 @@ th:nth-child(7) {
 
 @media(max-width: 768px) {
     #search {
-        margin-left: 0px;
+        margin-left: 20px;
         width: 50% !important;
     }
 }
@@ -328,7 +328,6 @@ th:nth-child(7) {
     -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
     -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
-
 
 .whiteButton {
     max-width: 200px;
@@ -547,7 +546,7 @@ hr {
     color: white !important;
     font-family: menufont;
     font-size: 15px;
-    padding:10px;
+    padding: 10px;
     float: left;
 }
 
@@ -625,7 +624,7 @@ p {
     margin-left: 75px;
 }
 
-.hoverOverLike:hover > div > .likeList {
+.hoverOverLike:hover + .likeList {
     display: block;
 }
 
@@ -648,10 +647,22 @@ p {
     z-index: 1000;
 }
 
+@media(max-width: 500px) {
+    .youtubeThumbnail {
+        float: left;
+        border-top-right-radius: 15px !important;
+        border-bottom-right-radius: 15px !important;
+        box-shadow: 0 4px 23px 5px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.15);
+        padding: 0px;
+    }
+}
+
+@media(min-width: 500px) {
 .youtubeThumbnail {
     float: left;
     border-radius: 15px;
     box-shadow: 0 4px 23px 5px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.15);
+}
 }
 
 .appearNoLink {
@@ -659,20 +670,22 @@ p {
     color: black !important;
 }
 
-.scrollToTop{
-	padding:10px; 
-	text-align:center; 
-	background-color: rgba(95, 158, 160, 0.8);;
-	color: #fff;
+.scrollToTop {
+    padding: 10px;
+    text-align: center;
+    background-color: rgba(95, 158, 160, 0.8);
+    ;
+    color: #fff;
     border-radius: 10px;
     font-family: menufont;
     font-size: 17px;
-	text-decoration: none;
-	position:fixed;
-	bottom:75px;
-	right:40px;
-	display:none;
+    text-decoration: none;
+    position: fixed;
+    bottom: 75px;
+    right: 40px;
+    display: none;
 }
-.scrollToTop:hover{
-	text-decoration:none;
+
+.scrollToTop:hover {
+    text-decoration: none;
 }
