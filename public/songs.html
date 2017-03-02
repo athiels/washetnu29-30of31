@@ -26,14 +26,10 @@
                         <h4 ng-if="songList.length == 0">Geen liedjes gevonden</h4>
                         <h4 ng-if="songList.length == 1"><strong style="font-family:menufont !important">{{songList.length}}</strong> liedje gevonden</h4>
                         <h4 ng-if="songList.length > 1"><strong style="font-family:menufont !important">{{songList.length}}</strong> liedjes gevonden</h4> </div>
-                    <div class="hidden-xs hidden-sm float-right" style="margin-top:-20px;">
-                        <input type="checkbox" ng-model="showVideos" style="margin-left: 25px; margin-top:-25px;"> Video's weergeven </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    
     <div id="songListDiv" class="main list">
         <!-- YOUTUBE SEARCH-->
         <div ng-if="showYoutubeResults">
@@ -54,8 +50,8 @@
         <div ng-hide="songList" class="center"> <img src="processing.gif">
             <h1>Liedjes aan 't laden</h1> </div>
         <div ng-repeat="song in songList | filter:search:strict">
-            <div class="row" style="margin-bottom:10px; margin-left:0px;">
-                <div id="youtubeSection{{song.ranking}}" ng-show="showVideos"> <img ng-click="showYouTubeVideo(song.ranking)" class="youtubeThumbnail hidden-xs hidden-sm" style="margin-top:20px;" src="{{song.thumbnail}}" width="264px" height="144px"> </div>
+            <div class="row" style="margin-bottom:10px; margin-left:20px;">
+                <div id="youtubeSection{{song.ranking}}"> <img ng-click="showYouTubeVideo(song.ranking)" class="youtubeThumbnail hidden-xs hidden-sm" style="margin-top:20px;" src="{{song.thumbnail}}" width="264px" height="144px"> </div>
                 <div style="margin-left: 20px !important;  float:left;">
                     <h3><strong style="font-family:menufont !important">{{song.ranking+1}}. </strong>{{song.title}}</h3>
                     <h3 style="margin-top:-10px; margin-left:30px;"><strong class="pointer" ng-click="searchArtist(song.artist)">{{song.artist}}</strong></h3>
