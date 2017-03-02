@@ -343,6 +343,21 @@ th:nth-child(7) {
     -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
+.searchMoreButton {
+    font-size: 16px;
+    font-family: menufont;
+    align-content: center;
+    padding: 4px;
+    background-color: #e52d27;
+    color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
 .whiteButton {
     max-width: 200px;
     align-content: center;

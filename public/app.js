@@ -23,6 +23,8 @@ app.controller("songListController", function ($scope, $http, $location, $filter
     }
     $scope.showYoutubeResults = false;
     $scope.showVideos = true;
+    $scope.numberOfYouTubeResults = 5;
+    
     
     function getUserInfo() {
         $scope.userMail = localStorage.getItem('songs-user');
@@ -266,11 +268,19 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             message: jq(".info").html()
         })
     }
-    $scope.searchYouTube = function () {
+    $scope.searchYouTube = function (loadMore) {
+        if (loadMore) {
+            $scope.numberOfYouTubeResults += 5;
+        }
+        else {
+            $scope.numberOfYouTubeResults;
+        }
+        //, relatedToVideoId: videoIdForRelatedVideos
         jq.get("https://www.googleapis.com/youtube/v3/search", {
             key: "AIzaSyB8OpxPegwyOFMx6sh0VrXBh2JKLSUe3YY"
             , part: "snippet"
-            , type: "video"
+            , type: "video"            
+            , maxResults: $scope.numberOfYouTubeResults
             , q: $scope.search
         }, function (data) {
             console.log(data);
