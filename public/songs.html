@@ -55,9 +55,9 @@
             <h1>Liedjes aan 't laden</h1> </div>
         <div ng-repeat="song in songList | filter:search:strict">
             <div class="row" style="margin-bottom:10px; margin-left:0px;">
-                <div id="youtubeSection{{$index}}" ng-show="showVideos"> <img ng-click="showYouTubeVideo($index)" class="youtubeThumbnail hidden-xs hidden-sm" style="margin-top:20px;" src="{{song.thumbnail}}" width="264px" height="144px"> </div>
+                <div id="youtubeSection{{song.ranking}}" ng-show="showVideos"> <img ng-click="showYouTubeVideo(song.ranking)" class="youtubeThumbnail hidden-xs hidden-sm" style="margin-top:20px;" src="{{song.thumbnail}}" width="264px" height="144px"> </div>
                 <div style="margin-left: 20px !important;  float:left;">
-                    <h3><strong style="font-family:menufont !important">{{song.ranking}}. </strong>{{song.title}}</h3>
+                    <h3><strong style="font-family:menufont !important">{{song.ranking+1}}. </strong>{{song.title}}</h3>
                     <h3 style="margin-top:-10px; margin-left:30px;"><strong class="pointer" ng-click="searchArtist(song.artist)">{{song.artist}}</strong></h3>
                     <div class="likeSection" style="margin-top:-7px; margin-left:30px">
                         <h5>                                                      

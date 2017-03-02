@@ -129,7 +129,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             }
             
             $scope.songList[i].thumbnail = "https://i.ytimg.com/vi/" + $scope.songList[i].ytID + "/mqdefault.jpg";
-            $scope.songList[i].ranking = i + 1;
+            $scope.songList[i].ranking = i;
             $scope.songList[i].likeList = [];
             for (j = 0; j < $scope.songList[i].upvotedBy.length; j++) {
                 if ($scope.songList[i].upvotedBy[j] === $scope.userMail) {
