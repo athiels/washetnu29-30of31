@@ -110,23 +110,37 @@ tr:hover {
     }
 }
 
-@media(min-width: 1000px) {
-    #main {
-        max-width: 50%;
-        margin: 0 auto;
-    }
-}
-
-@media(min-width: 768px) {
-    #main {
-        max-width: 80%;
-        margin: 0 auto;
-    }
-}
-
 @media(max-width: 768px) {
-    #main {
+    .main {
         width: 100%;
+        margin: 0 auto;
+    }
+}
+
+@media(min-width: 850px) {
+    .main {
+        width: 90%;
+        margin: 0 auto;
+    }
+}
+
+@media(min-width: 1000px) {
+    .main {
+        width: 80%;
+        margin: 0 auto;
+    }
+}
+
+@media(min-width: 1200px) {
+    .main {
+        width: 70%;
+        margin: 0 auto;
+    }
+}
+
+@media(min-width: 1400px) {
+    .main {
+        width: 60%;
         margin: 0 auto;
     }
 }
@@ -300,9 +314,9 @@ th:nth-child(7) {
     border-radius: 0px;
     border-top-left-radius: 15px;
     border-bottom-left-radius: 15px;
-    width: 300px;
     display: inline-block;
     float: left;
+    width: 70%;
 }
 
 @media(max-width: 768px) {
@@ -379,49 +393,12 @@ th:nth-child(7) {
     margin-right: 10px;
 }
 
-.duplicatesPopup {
-    z-index: 1000;
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    border: solid;
-    border-bottom-left-radius: 25px;
-    border-width: 1px;
-    width: 280px;
-    height: 120px;
-    background-image: -webkit-linear-gradient(top, firebrick 0, darkred 100%);
-    background-image: -o-linear-gradient(top, firebrick 0, darkred 100%);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(firebrick), to(darkred));
-    background-image: linear-gradient(to bottom, firebrick 0, darkred 100%);
-    //margin: 10px;
-    padding: 10px;
-    box-shadow: 5px 4px 3px #888888;
-    cursor: pointer;
-}
-
-.duplicatesPopup > p {
-    color: aliceblue
-}
-
-.show-animation {
-    transition: all linear 0.5s;
-}
-
-.show-animation.ng-hide {
-    opacity: 0.5;
-    top: -140px;
-}
-
-.show-animation.ng-show {
-    opacity: 1;
-    top: 0px;
-}
 
 hr {
     display: block;
     margin-top: 0.5em !important;
     margin-bottom: 0.2em !important;
-    border-color: cadetblue !important;
+    border-color: black;
 }
 
 .noLink:link {
@@ -531,9 +508,12 @@ hr {
 }
 
 .navigation {
+    z-index: 10;
+    position: fixed;
+    top: 0px;
     min-height: 70px;
     width: 100%;
-    background-color: rgba(95, 158, 160, 0.5);
+    background-color: rgba(95, 158, 160, 1);
 }
 
 .navigationButton {
@@ -581,12 +561,6 @@ p {
     padding: 20px;
 }
 
-.list {
-    background-color: rgba(255, 255, 255, 0.5);
-    margin-top: 0px !important;
-    box-shadow: 0 4px 23px 5px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
 
 /* Let's get this party started */
 
@@ -620,7 +594,7 @@ p {
     position: absolute;
     border-radius: 8px;
     padding: 6px;
-    z-index: 1000;
+    z-index: 5;
     margin-left: 75px;
 }
 
@@ -633,36 +607,11 @@ p {
     font-family: menufont;
 }
 
-.newSongMessage {
-    background-color: rgba(95, 158, 160, 0.9);
-    color: white;
-    position: fixed;
-    top: 25%;
-    left: 50%;
-    /* bring your own prefixes */
-    transform: translate(-50%, -50%);
-    border-radius: 15px;
-    padding-left: 10px;
-    padding-right: 10px;
-    z-index: 1000;
-}
 
-@media(max-width: 500px) {
-    .youtubeThumbnail {
-        float: left;
-        border-top-right-radius: 15px !important;
-        border-bottom-right-radius: 15px !important;
-        box-shadow: 0 4px 23px 5px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.15);
-        padding: 0px;
-    }
-}
-
-@media(min-width: 500px) {
 .youtubeThumbnail {
     float: left;
     border-radius: 15px;
     box-shadow: 0 4px 23px 5px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.15);
-}
 }
 
 .appearNoLink {
@@ -674,7 +623,6 @@ p {
     padding: 10px;
     text-align: center;
     background-color: rgba(95, 158, 160, 0.8);
-    ;
     color: #fff;
     border-radius: 10px;
     font-family: menufont;
@@ -688,4 +636,41 @@ p {
 
 .scrollToTop:hover {
     text-decoration: none;
+}
+
+.youtubeIframe {
+    margin-top: 20px;
+    border-radius: 15px;
+}
+
+.center {
+    margin-top: 100px;
+    margin-bottom: 100px;
+    text-align: center;
+}
+
+footer {
+    background-color: rgba(95, 158, 160, 0.9);
+    color: aliceblue;
+    font-family: menufont;
+    width: 100%;
+    position: fixed;
+    bottom: 0px;
+    text-align: center;
+}
+
+.searchBar {
+    z-index: 10;
+    box-shadow: 0 4px 23px 5px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.15);
+    background-color: white;
+}
+
+.list {
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 23px 5px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.15);
+    padding: 10px;
+}
+
+#songListDiv {
+    margin-top:180px;
 }

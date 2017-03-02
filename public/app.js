@@ -9,7 +9,7 @@ app.config(function ($routeProvider) {
         templateUrl: "watIsDezeWebsite.html"
     });
 });
-app.controller("songListController", function ($scope, $http, $location, $filter, $interval) {
+app.controller("songListController", function ($scope, $http, $location, $filter, $interval, $sce, $animate) {
     $scope.userMail = localStorage.getItem('songs-user');
     $scope.userFname;
     $scope.userLname;
@@ -22,7 +22,8 @@ app.controller("songListController", function ($scope, $http, $location, $filter
         $scope.superAdmin = true;
     }
     $scope.showYoutubeResults = false;
-
+    $scope.showVideos = true;
+    
     function getUserInfo() {
         $scope.userMail = localStorage.getItem('songs-user');
         if ($scope.userMail) {
@@ -95,6 +96,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
         }
         xhr.send();
     }
+    /*
     var refreshSongList = $interval(function () {
         var s = document.getElementById('search').value
         if (s || $scope.showingSongsOfUser) return;
@@ -108,16 +110,25 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                 makePlaylist(songs);
             }
         });
-    }, 10000);
-
+    }, 100000);
+    */
     function makePlaylist(songs) {
         $scope.songList = songs;
+        //$scope.songList.length = 50;
         $scope.songList = $filter('orderBy')($scope.songList, '-upvotes');
         for (i = 0; i < $scope.songList.length; i++) {
             $scope.songList[i].title = capitalizeFirstLetter($scope.songList[i].title);
             $scope.songList[i].artist = capitalizeFirstLetter($scope.songList[i].artist);
             $scope.songList[i].userFname = capitalizeFirstLetter($scope.songList[i].userFname);
             $scope.songList[i].userLname = capitalizeFirstLetter($scope.songList[i].userLname);
+            $scope.songList[i].ytFrameUrl = $sce.trustAsResourceUrl($scope.songList[i].yturl.replace("watch?v=","embed/")+"?autoplay=1");
+            if ($scope.songList[i].yturl.indexOf("?v=") > 0) {
+                $scope.songList[i].ytID = $scope.songList[i].yturl.substr($scope.songList[i].yturl.indexOf("?v=") + 3, $scope.songList[i].length);
+            } else {
+                $scope.songList[i].ytID = $scope.songList[i].yturl.substr($scope.songList[i].yturl.indexOf("embed/") + 6, $scope.songList[i].length);
+            }
+            
+            $scope.songList[i].thumbnail = "https://i.ytimg.com/vi/" + $scope.songList[i].ytID + "/mqdefault.jpg";
             $scope.songList[i].ranking = i + 1;
             $scope.songList[i].likeList = [];
             for (j = 0; j < $scope.songList[i].upvotedBy.length; j++) {
@@ -162,7 +173,8 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                     }
                 }
                 xhr.send();
-            } else {
+            }
+            else {
                 console.log("Je hebt dit al geliket");
             }
         }
@@ -199,7 +211,35 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             showLogInModal();
         }
     }
+    $scope.showYouTubeVideo = function (id) {
+        var songId = "youtubeSection" + id;
+        var elem = document.getElementById(songId);
+        elem.removeChild(elem.childNodes[1]);
+                
+        var iframe = document.createElement('iframe');
+        iframe.src = $scope.songList[id].ytFrameUrl;
+        iframe.height = 144;
+        iframe.width = 264;
+        iframe.className = "youtubeIframe youtubeThumbnail";
+        iframe.setAttribute('allowFullScreen', '');
+        elem.appendChild(iframe);
+    }
+    
+    $scope.showSearchYouTubeVideo = function (id) {
+        var songId = "youtubeSearchSection" + id;
+        var elem = document.getElementById(songId);
+        elem.removeChild(elem.childNodes[1]);
+                
+        var iframe = document.createElement('iframe');
+        iframe.src = $scope.youtubeSearchList[id].ytFrameUrl;
+        iframe.height = 144;
+        iframe.width = 264;
+        iframe.className = "youtubeIframe youtubeThumbnail";
+        iframe.setAttribute('allowFullScreen', '');
+        elem.appendChild(iframe);
+    }
     $scope.showSongsOfUser = function (user) {
+        jq('#songListDiv').css({'margin-top': '250px'}); 
         $scope.scrollToTop();
         $scope.showingSongsOfUser = true;
         $scope.showSongsOfUserMessage = "Hitlijst van " + getUserByMail(user);
@@ -240,14 +280,16 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                     title: ""
                     , thumbnail: ""
                     , yturl: ""
+                    , ytIframeUrl: ""
                 };
                 song.title = data.items[i].snippet.title;
                 song.title = song.title.replace(/\s*\(.*?\)\s*/g, '');
-                if (song.title.length > 50) {
-                    song.title = song.title.substr(0, 50) + "...";
+                if (song.title.length > 40) {
+                    song.title = song.title.substr(0, 40) + "...";
                 }
                 song.thumbnail = data.items[i].snippet.thumbnails.medium.url;
-                song.yturl = "https://www.youtube.com/watch?v=" + data.items[i].id.videoId;
+                song.yturl = "https://www.youtube.com/embed/" + data.items[i].id.videoId;
+                song.ytFrameUrl = $sce.trustAsResourceUrl(song.yturl+"?autoplay=1");
                 $scope.youtubeSearchList.push(song);
             }
             $scope.showYoutubeResults = true;
@@ -278,6 +320,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
     }
     $scope.resetSearch = function () {
         $scope.search = "";
+        jq('#songListDiv').css({'margin-top': '180px'}); 
     }
     $scope.scrollToTop = function () {
         jq("html, body").animate({
@@ -341,7 +384,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
                             xhr.setRequestHeader("userlname", $scope.userLname);
                             xhr.setRequestHeader("title", items.songTitle);
                             xhr.setRequestHeader("artist", items.songArtist);
-                            xhr.setRequestHeader("yturl", items.songYturl);
+                            xhr.setRequestHeader("yturl", items.songYturl.replace("watch?v=", "embed/"));
                             xhr.onload = function () {
                                 if (xhr.status === 200) {
                                     bootbox.alert({
