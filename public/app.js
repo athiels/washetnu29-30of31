@@ -281,6 +281,7 @@ app.controller("songListController", function ($scope, $http, $location, $filter
             , part: "snippet"
             , type: "video"            
             , maxResults: $scope.numberOfYouTubeResults
+            , videoEmbeddable: "true"
             , q: $scope.search
         }, function (data) {
             console.log(data);
